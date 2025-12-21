@@ -1,0 +1,5 @@
+RewriteEngine On
+# If using Apache, point DocumentRoot to `public/` and this helps with pretty URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]

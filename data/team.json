@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Peter Scharringhausen",
+    "role": "Der Vorsitzende",
+    "category": "board",
+    "image": "team-peter-scharringhausen.svg",
+    "bio": "Vorsitzender des Vorstands der Andreas Pareigis Stiftung",
+    "email": "peter.scharringhausen@andreas-pareigis-stiftung.de",
+    "phone": "+49 152 08987931"
+  },
+  {
+    "name": "Birte Flammann",
+    "role": "Die stellvertretende Vorsitzende",
+    "category": "board",
+    "image": "team-birte-flammann.svg",
+    "bio": "Stellvertretende Vorsitzende des Vorstands der Andreas Pareigis Stiftung",
+    "email": "birte.flammann@andreas-pareigis-stiftung.de",
+    "phone": "+49 151 65173049"
+  },
+  {
+    "name": "Michael Lihograj",
+    "role": "Der Schatzmeister",
+    "category": "board",
+    "image": "team-michael-lihograj.svg",
+    "bio": "Schatzmeister des Vorstands der Andreas Pareigis Stiftung",
+    "email": "michael.lihograj@andreas-pareigis-stiftung.de",
+    "phone": "+49 151 10505092"
+  },
+  {
+    "name": "Nina Engelke",
+    "role": "Die Vorsitzende des Kuratoriums",
+    "category": "kuratorium",
+    "image": "team-nina-engelke.svg",
+    "bio": "Vorsitzende des Kuratoriums der Andreas Pareigis Stiftung",
+    "email": "nina.engelke@andreas-pareigis-stiftung.de",
+    "phone": "+49 152 23950065"
+  },
+  {
+    "name": "Birgit Bremer",
+    "role": "Mitglied des Kuratoriums",
+    "category": "kuratorium",
+    "image": "team-birgit-bremer.svg",
+    "bio": "Mitglied des Kuratoriums der Andreas Pareigis Stiftung",
+    "email": "birgit.bremer@andreas-pareigis-stiftung.de",
+    "phone": "+49 170 8149870"
+  },
+  {
+    "name": "Torben von Wieding",
+    "role": "Mitglied des Kuratoriums",
+    "category": "kuratorium",
+    "image": "team-torben-von-wieding.svg",
+    "bio": "Mitglied des Kuratoriums der Andreas Pareigis Stiftung",
+    "email": "torben.vonwieding@andreas-pareigis-stiftung.de",
+    "phone": "+49 160 98382351"
+  },
+  {
+    "name": "Juliane Flammann",
+    "role": "Mitglied des Kuratoriums",
+    "category": "kuratorium",
+    "image": "team-juliane-flammann.svg",
+    "bio": "Mitglied des Kuratoriums der Andreas Pareigis Stiftung",
+    "email": "juliane.flammann@andreas-pareigis-stiftung.de",
+    "phone": "+49 151 42333303"
+  }
+]
