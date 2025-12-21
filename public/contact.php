@@ -202,7 +202,7 @@ include __DIR__ . '/../templates/header.php';
               </h2>
               <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                 <div class="accordion-body">
-                  Die Bearbeitungszeit variiert je nach Komplexität des Antrags. In der Regel erhalten Sie innerhalb von 4-6 Wochen eine Rückmeldung vom Vorstand und Kuratorium.
+                  Die Bearbeitung eines Förderantrags dauert in der Regel nur wenige Tage. Sie erhalten zeitnah eine Rückmeldung vom Vorstand und Kuratorium.
                 </div>
               </div>
             </div>

@@ -1,4 +1,20 @@
 RewriteEngine On
+
+# Protect sensitive files and directories
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to .env files
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Deny access to configuration directory
+RedirectMatch 403 ^/\.config/
+
 # If using Apache, point DocumentRoot to `public/` and this helps with pretty URLs
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

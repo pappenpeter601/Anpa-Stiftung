@@ -23,9 +23,9 @@ include __DIR__ . '/../templates/header.php';
 
 <div class="hero pt-5 pb-5 mb-5">
   <div class="container text-center">
-    <h1 class="display-5 mb-3">Our Funded Projects</h1>
+    <h1 class="display-5 mb-3">Geförderte Projekte</h1>
     <p class="lead text-muted mx-auto" style="max-width: 700px;">
-      Discover the innovative initiatives we support to empower youth across our communities
+      Entdecken Sie die Projekte, mit denen wir Kinder und Jugendliche in Soltau unterstützen
     </p>
   </div>
 </div>
@@ -35,12 +35,12 @@ include __DIR__ . '/../templates/header.php';
     <div class="col-lg-8">
       <h4 class="fw-bold">
         <?php if ($filter_year): ?>
-          Projects from <?php echo htmlspecialchars($filter_year); ?>
+          Projekte aus <?php echo htmlspecialchars($filter_year); ?>
         <?php else: ?>
-          All Projects
+          Alle Projekte
         <?php endif; ?>
       </h4>
-      <p class="text-muted">Showing <?php echo count($projects); ?> project<?php echo count($projects) !== 1 ? 's' : ''; ?></p>
+      <p class="text-muted"><?php echo count($projects); ?> Projekt<?php echo count($projects) !== 1 ? 'e' : ''; ?> angezeigt</p>
     </div>
     <div class="col-lg-4 text-lg-end">
       <div class="dropdown d-inline-block">
@@ -48,10 +48,10 @@ include __DIR__ . '/../templates/header.php';
           <svg width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;">
             <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
           </svg>
-          Filter by Year
+          Nach Jahr filtern
         </button>
         <ul class="dropdown-menu" aria-labelledby="yearFilter">
-          <li><a class="dropdown-item <?php echo !$filter_year ? 'active' : ''; ?>" href="projects.php">All Years</a></li>
+          <li><a class="dropdown-item <?php echo !$filter_year ? 'active' : ''; ?>" href="projects.php">Alle Jahre</a></li>
           <?php foreach ($years as $y): ?>
             <li><a class="dropdown-item <?php echo $filter_year === (int)$y ? 'active' : ''; ?>" href="projects.php?year=<?php echo $y; ?>"><?php echo $y; ?></a></li>
           <?php endforeach; ?>
@@ -64,7 +64,7 @@ include __DIR__ . '/../templates/header.php';
     <?php if (empty($projects)): ?>
       <div class="col-12">
         <div class="alert alert-info">
-          No projects found for the selected year.
+          Keine Projekte für das ausgewählte Jahr gefunden.
         </div>
       </div>
     <?php else: ?>
@@ -101,7 +101,7 @@ include __DIR__ . '/../templates/header.php';
                 
                 <?php if (!empty($p['amount'])): ?>
                   <div class="mt-2">
-                    <small class="text-muted">Funding: <strong class="text-gradient"><?php echo htmlspecialchars($p['amount']); ?></strong></small>
+                    <small class="text-muted">Fördersumme: <strong class="text-gradient"><?php echo htmlspecialchars($p['amount']); ?></strong></small>
                   </div>
                 <?php endif; ?>
               </div>
@@ -117,56 +117,11 @@ include __DIR__ . '/../templates/header.php';
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-8">
-        <h3 class="fw-bold mb-3">Have a Project Idea?</h3>
-        <p class="mb-0">We're always looking for innovative projects that can make a real difference in young people's lives. If you have a project that aligns with our mission, we'd love to hear from you.</p>
+        <h3 class="fw-bold mb-3">Sie haben eine Projektidee?</h3>
+        <p class="mb-0">Wir suchen stets nach innovativen Projekten, die das Leben von Kindern und Jugendlichen nachhaltig verbessern. Wenn Sie ein Projekt haben, das zu unserem Stiftungszweck passt, freuen wir uns auf Ihre Anfrage.</p>
       </div>
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-        <a href="request.php" class="btn btn-primary btn-lg">Submit Your Project</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="container mb-5">
-  <div class="section-header">
-    <h2>Project Impact by Category</h2>
-    <p>Our investments across different areas of youth development</p>
-  </div>
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm text-center p-4">
-        <div class="feature-icon mx-auto">
-          <svg width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5Z"/>
-          </svg>
-        </div>
-        <h4 class="fw-bold text-gradient mb-2">45%</h4>
-        <h6 class="fw-bold">Education</h6>
-        <p class="text-muted small mb-0">School supplies, tutoring, educational technology</p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm text-center p-4">
-        <div class="feature-icon mx-auto">
-          <svg width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-          </svg>
-        </div>
-        <h4 class="fw-bold text-gradient mb-2">35%</h4>
-        <h6 class="fw-bold">Health & Wellness</h6>
-        <p class="text-muted small mb-0">Mental health, sports programs, health screenings</p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm text-center p-4">
-        <div class="feature-icon mx-auto">
-          <svg width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3z"/>
-          </svg>
-        </div>
-        <h4 class="fw-bold text-gradient mb-2">20%</h4>
-        <h6 class="fw-bold">Skills Development</h6>
-        <p class="text-muted small mb-0">Vocational training, mentorship, career prep</p>
+        <a href="request.php" class="btn btn-primary btn-lg">Förderantrag stellen</a>
       </div>
     </div>
   </div>

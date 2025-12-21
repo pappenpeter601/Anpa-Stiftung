@@ -16,12 +16,12 @@ class EmailService {
         // Get email configuration from environment or config
         $this->config = [
             'host' => getenv('SMTP_HOST') ?: 'smtp.ionos.de',
-            'port' => getenv('SMTP_PORT') ?: 587,
+            'port' => (int)(getenv('SMTP_PORT') ?: 587),
             'username' => getenv('SMTP_USERNAME') ?: '',
             'password' => getenv('SMTP_PASSWORD') ?: '',
-            'from_email' => getenv('FROM_EMAIL') ?: 'info@andreas-pareigis-stiftung.de',
-            'from_name' => getenv('FROM_NAME') ?: 'Andreas Pareigis Stiftung',
-            'admin_email' => getenv('ADMIN_EMAIL') ?: 'info@andreas-pareigis-stiftung.de'
+            'from_email' => getenv('SMTP_FROM_EMAIL') ?: 'info@andreas-pareigis-stiftung.de',
+            'from_name' => getenv('SMTP_FROM_NAME') ?: 'Andreas Pareigis Stiftung',
+            'admin_email' => getenv('SMTP_FROM_EMAIL') ?: 'info@andreas-pareigis-stiftung.de'
         ];
         
         $this->smtpClient = new SMTPClient(

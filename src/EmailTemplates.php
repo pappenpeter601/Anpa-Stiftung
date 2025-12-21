@@ -7,9 +7,23 @@
 class EmailTemplates {
     
     /**
+     * Get base64 encoded logo for email embedding
+     */
+    private static function getLogoBase64() {
+        $logoPath = __DIR__ . '/../public/assets/img/logo-120.png';
+        if (file_exists($logoPath)) {
+            $imageData = file_get_contents($logoPath);
+            return 'data:image/png;base64,' . base64_encode($imageData);
+        }
+        return '';
+    }
+    
+    /**
      * Generate HTML email base structure
      */
     public static function getHtmlBase($title, $content) {
+        $logoSrc = self::getLogoBase64();
+        
         return '<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -30,9 +44,9 @@ class EmailTemplates {
                 <table class="container" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                     <!-- Header -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #2563eb, #7c3aed); padding: 30px; text-align: center;">
-                            <img src="' . BASE_URL . 'assets/img/logo-120.png" alt="Andreas Pareigis Stiftung Logo" width="120" height="64" style="margin-bottom: 15px;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: normal;">Andreas Pareigis Stiftung</h1>
+                        <td style="background: linear-gradient(135deg, #2563eb, #7c3aed); padding: 30px; text-align: center;">' 
+                            . ($logoSrc ? '<img src="' . $logoSrc . '" alt="Andreas Pareigis Stiftung Logo" width="120" height="51" style="margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">' : '') . 
+                            '<h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: normal;">Andreas Pareigis Stiftung</h1>
                             <p style="margin: 10px 0 0 0; color: #f4f4f4; font-size: 16px;">Junge Leben stärken durch soziale Projekte</p>
                         </td>
                     </tr>
