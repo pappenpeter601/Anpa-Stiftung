@@ -1,0 +1,102 @@
+[
+  {
+    "title": "Schulmaterial-Initiative 2024",
+    "summary": "Essentielle Schulmaterialien für 250 Kinder aus einkommensschwachen Familien bereitgestellt.",
+    "description": "Umfassendes Programm zur Verteilung von Rucksäcken, Heften, Schreibmaterialien und Lernhilfen, um sicherzustellen, dass alle Schüler gut vorbereitet ins neue Schuljahr starten.",
+    "image": "project1.jpg",
+    "year": 2024,
+    "category": "Bildung",
+    "beneficiaries": "250 Jugendliche",
+    "amount": "€15.000"
+  },
+  {
+    "title": "Psychische Gesundheitsförderung für Jugendliche",
+    "summary": "Kostenlose Beratung und Workshops zur psychischen Gesundheit für Teenager in ländlichen Gebieten.",
+    "description": "Partnerschaft mit lizenzierten Therapeuten zur Bereitstellung zugänglicher Unterstützung für psychische Gesundheit, Stressbewältigungs-Workshops und Peer-Support-Gruppen.",
+    "image": "project2.jpg",
+    "year": 2024,
+    "category": "Gesundheit & Wohlbefinden",
+    "beneficiaries": "180 Jugendliche",
+    "amount": "€28.000"
+  },
+  {
+    "title": "Digital Skills Bootcamp",
+    "summary": "Programmier- und digitale Kompetenzschulung für benachteiligte Jugendliche im Alter von 15-18 Jahren.",
+    "description": "Intensives 12-Wochen-Programm zum Erlernen von Programmierung, Webentwicklung und digitalem Design zur Vorbereitung auf Technologieberufe.",
+    "image": "project3.jpg",
+    "year": 2024,
+    "category": "Kompetenzentwicklung",
+    "beneficiaries": "45 Jugendliche",
+    "amount": "€22.000"
+  },
+  {
+    "title": "Gemeinschafts-Sportliga",
+    "summary": "Außerschulische Sportprogramme zur Förderung von körperlicher Aktivität und Teamarbeit.",
+    "description": "Organisierte Fußball-, Basketball- und Leichtathletikprogramme in benachteiligten Stadtvierteln, einschließlich Ausrüstung, Coaching und Turnierteilnahme.",
+    "image": "project4.jpg",
+    "year": 2024,
+    "category": "Gesundheit & Wohlbefinden",
+    "beneficiaries": "320 Jugendliche",
+    "amount": "€18.500"
+  },
+  {
+    "title": "Lesechampions-Programm",
+    "summary": "Leseförderung und Bereicherung für Grundschüler.",
+    "description": "Freiwilligen-Nachhilfeprogramm mit Einzelleseförderung, Buchspenden und Familien-Alphabetisierungs-Workshops.",
+    "image": "project5.jpg",
+    "year": 2023,
+    "category": "Bildung",
+    "beneficiaries": "150 Jugendliche",
+    "amount": "€12.000"
+  },
+  {
+    "title": "Jugend-Führungsakademie",
+    "summary": "Führungskräfteentwicklungsprogramm für Oberschüler.",
+    "description": "Ganzjähriges Programm mit Workshops, Mentoring, gemeinnützigen Projekten und Führungskonferenzen zur Entwicklung zukünftiger Gemeindeleiter.",
+    "image": "project6.jpg",
+    "year": 2023,
+    "category": "Kompetenzentwicklung",
+    "beneficiaries": "60 Jugendliche",
+    "amount": "€25.000"
+  },
+  {
+    "title": "Ernährungsbildungs-Initiative",
+    "summary": "Workshops zu gesunder Ernährung und Kochkurse für Jugendliche und Familien.",
+    "description": "Praktische Kochkurse, Ernährungsbildung und Familienessen-Planung zur Förderung gesunder Gewohnheiten und Bekämpfung von Ernährungsunsicherheit.",
+    "image": "project7.jpg",
+    "year": 2023,
+    "category": "Gesundheit & Wohlbefinden",
+    "beneficiaries": "200 Jugendliche",
+    "amount": "€16.000"
+  },
+  {
+    "title": "MINT-Entdeckungstage",
+    "summary": "Interaktive Workshops zu Naturwissenschaften, Technologie, Ingenieurwesen und Mathematik.",
+    "description": "Monatliche praktische MINT-Aktivitäten, Laborbesuche und Interaktionen mit Wissenschaftlern zur Förderung des Interesses an MINT-Berufen.",
+    "image": "project8.jpg",
+    "year": 2023,
+    "category": "Bildung",
+    "beneficiaries": "280 Jugendliche",
+    "amount": "€20.000"
+  },
+  {
+    "title": "Kunst- & Musikbereicherung",
+    "summary": "Musikunterricht und Kunstkurse für Kinder mit eingeschränktem Zugang zu Kunstbildung.",
+    "description": "Wöchentlicher Musikunterricht, Kunst-Workshops und Auftrittsmöglichkeiten zur Entwicklung von Kreativität und Selbstausdruck.",
+    "image": "project9.jpg",
+    "year": 2023,
+    "category": "Kompetenzentwicklung",
+    "beneficiaries": "95 Jugendliche",
+    "amount": "€14.500"
+  },
+  {
+    "title": "Sommer-Lerncamp",
+    "summary": "Umfassendes Sommerprogramm zur Vermeidung von Lernverlusten während der Schulferien.",
+    "description": "Sechswöchiges Tagescamp mit akademischer Verstärkung, Freizeitaktivitäten, Ausflügen und gesunden Mahlzeiten.",
+    "image": "project10.jpg",
+    "year": 2024,
+    "category": "Bildung",
+    "beneficiaries": "175 Jugendliche",
+    "amount": "€30.000"
+  }
+]

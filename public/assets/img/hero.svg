@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
+  <rect width="600" height="400" fill="#f8f9fa" />
+  
+  <!-- Decorative background elements -->
+  <g opacity="0.08">
+    <circle cx="100" cy="100" r="60" fill="#0d6efd" />
+    <circle cx="500" cy="320" r="80" fill="#7b61ff" />
+    <rect x="350" y="50" width="180" height="180" rx="20" fill="#10b981" />
+  </g>
+  
+  <!-- Logo embedded as image -->
+  <image href="logo-400.png" x="75" y="100" width="450" height="190" preserveAspectRatio="xMidYMid meet"/>
+  
+  <!-- Optional text -->
+  <text x="300" y="350" fill="#6b7280" font-size="18" text-anchor="middle" font-family="Arial, sans-serif">Gemeinsam für Kinder und Jugendliche</text>
+</svg>
