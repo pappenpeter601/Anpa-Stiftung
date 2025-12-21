@@ -1,0 +1,13 @@
+# Environment configuration with sensitive credentials
+.config/
+
+# Composer dependencies
+/vendor/
+
+# Temporary files
+*.tmp
+*.log
+
+# System files
+.DS_Store
+Thumbs.db

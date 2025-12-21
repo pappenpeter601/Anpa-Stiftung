@@ -33,7 +33,7 @@ include __DIR__ . '/../templates/header.php';
           <li>Förderanträge können ausschließlich von gemeinnützigen Organisationen mit Sitz in Soltau gestellt werden.</li>
           <li>Der Antrag ist vollständig auszufüllen und mit allen erforderlichen Unterlagen einzureichen.</li>
           <li>Die Stiftung prüft die Anträge nach pflichtgemäßem Ermessen. Es besteht kein Rechtsanspruch auf Förderung.</li>
-          <li>Die Bearbeitungszeit beträgt in der Regel 4-6 Wochen. Der Antragsteller wird über das Ergebnis schriftlich oder per E-Mail informiert.</li>
+          <li>Die Bearbeitungszeit beträgt in der Regel wenige Tage. Der Antragsteller wird über das Ergebnis schriftlich oder per E-Mail informiert.</li>
           <li>Unvollständige oder fehlerhafte Anträge können zurückgewiesen werden.</li>
         </ol>
         

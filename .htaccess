@@ -1,0 +1,17 @@
+# Protect configuration directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^\.config/ - [F,L]
+</IfModule>
+
+# Deny direct access to .env files
+<FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to hidden files (starting with dot)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

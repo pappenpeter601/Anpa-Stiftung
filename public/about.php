@@ -163,8 +163,8 @@ include __DIR__ . '/../templates/header.php';
               <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
             </svg>
           </div>
-          <h5 class="fw-bold">Equity</h5>
-          <p class="text-muted">We prioritize projects that serve underserved communities and reduce barriers for disadvantaged youth.</p>
+          <h5 class="fw-bold">Chancengleichheit</h5>
+          <p class="text-muted">Wir priorisieren Projekte, die benachteiligten Kindern und Jugendlichen Zugang zu Bildung und Kultur ermöglichen.</p>
         </div>
       </div>
     </div>
@@ -176,8 +176,8 @@ include __DIR__ . '/../templates/header.php';
               <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
             </svg>
           </div>
-          <h5 class="fw-bold">Collaboration</h5>
-          <p class="text-muted">We partner with organizations, experts, and community leaders to maximize our reach and effectiveness.</p>
+          <h5 class="fw-bold">Zusammenarbeit</h5>
+          <p class="text-muted">Wir arbeiten mit gemeinnützigen Organisationen in Soltau zusammen, um unsere Reichweite und Wirksamkeit zu maximieren.</p>
         </div>
       </div>
     </div>
@@ -190,8 +190,8 @@ include __DIR__ . '/../templates/header.php';
               <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
             </svg>
           </div>
-          <h5 class="fw-bold">Sustainability</h5>
-          <p class="text-muted">We support programs that build long-term capacity and create lasting benefits for communities.</p>
+          <h5 class="fw-bold">Nachhaltigkeit</h5>
+          <p class="text-muted">Wir unterstützen Programme, die langfristige Wirkung erzielen und nachhaltige Verbesserungen schaffen.</p>
         </div>
       </div>
     </div>
@@ -202,11 +202,11 @@ include __DIR__ . '/../templates/header.php';
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-8">
-        <h3 class="fw-bold mb-3">Our Commitment to Youth</h3>
-        <p class="mb-0">The Anpa Foundation is committed to being a catalyst for positive change. We believe that investing in young people is investing in the future, and we approach this responsibility with the utmost dedication and care. Through rigorous project selection, ongoing monitoring, and continuous learning, we ensure that every euro invested creates maximum value for the youth we serve.</p>
+        <h3 class="fw-bold mb-3">Unser Engagement für junge Menschen</h3>
+        <p class="mb-0">Die Andreas Pareigis Stiftung setzt sich dafür ein, ein Motor für positive Veränderungen zu sein. Wir glauben, dass Investitionen in junge Menschen Investitionen in die Zukunft sind, und wir gehen diese Verantwortung mit größter Hingabe und Sorgfalt an. Durch sorgfältige Projektauswahl, kontinuierliche Begleitung und ständiges Lernen stellen wir sicher, dass jeder investierte Euro maximalen Nutzen für die von uns unterstützten Kinder und Jugendlichen schafft.</p>
       </div>
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-        <a href="team.php" class="btn btn-primary btn-lg">Meet Our Team</a>
+        <a href="team.php" class="btn btn-primary btn-lg">Unser Team kennenlernen</a>
       </div>
     </div>
   </div>
@@ -216,14 +216,14 @@ include __DIR__ . '/../templates/header.php';
   <div class="row">
     <div class="col-lg-8 mx-auto">
       <div class="card border-0 shadow-lg p-4">
-        <h4 class="fw-bold mb-4">How We Work</h4>
+        <h4 class="fw-bold mb-4">Wie wir arbeiten</h4>
         <div class="row g-4">
           <div class="col-md-6">
             <div class="d-flex gap-3">
               <div class="text-primary fw-bold fs-3">01</div>
               <div>
-                <h6 class="fw-bold">Identify Needs</h6>
-                <p class="small text-muted mb-0">We research and identify critical needs affecting youth in our target communities.</p>
+                <h6 class="fw-bold">Bedarf ermitteln</h6>
+                <p class="small text-muted mb-0">Wir identifizieren wichtige Bedarfe, die Kinder und Jugendliche in Soltau betreffen.</p>
               </div>
             </div>
           </div>
@@ -231,8 +231,8 @@ include __DIR__ . '/../templates/header.php';
             <div class="d-flex gap-3">
               <div class="text-primary fw-bold fs-3">02</div>
               <div>
-                <h6 class="fw-bold">Evaluate Projects</h6>
-                <p class="small text-muted mb-0">Our expert board reviews applications based on impact potential, feasibility, and alignment with our mission.</p>
+                <h6 class="fw-bold">Projekte bewerten</h6>
+                <p class="small text-muted mb-0">Vorstand und Kuratorium prüfen Anträge anhand von Wirkungspotenzial, Machbarkeit und Übereinstimmung mit unserem Stiftungszweck.</p>
               </div>
             </div>
           </div>
@@ -240,8 +240,8 @@ include __DIR__ . '/../templates/header.php';
             <div class="d-flex gap-3">
               <div class="text-primary fw-bold fs-3">03</div>
               <div>
-                <h6 class="fw-bold">Provide Funding</h6>
-                <p class="small text-muted mb-0">Selected projects receive financial support and ongoing guidance from our team.</p>
+                <h6 class="fw-bold">Förderung gewähren</h6>
+                <p class="small text-muted mb-0">Ausgewählte Projekte erhalten finanzielle Unterstützung und kontinuierliche Begleitung.</p>
               </div>
             </div>
           </div>
@@ -249,8 +249,8 @@ include __DIR__ . '/../templates/header.php';
             <div class="d-flex gap-3">
               <div class="text-primary fw-bold fs-3">04</div>
               <div>
-                <h6 class="fw-bold">Measure Impact</h6>
-                <p class="small text-muted mb-0">We track outcomes and share learnings to improve future investments and inspire others.</p>
+                <h6 class="fw-bold">Wirkung messen</h6>
+                <p class="small text-muted mb-0">Wir dokumentieren Ergebnisse und teilen Erkenntnisse, um zukünftige Förderungen zu verbessern.</p>
               </div>
             </div>
           </div>
