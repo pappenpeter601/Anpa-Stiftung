@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+$pageTitle = 'Datenschutz';
+$pageDescription = 'Datenschutzerklärung der Andreas Pareigis Stiftung - Informationen zum Umgang mit personenbezogenen Daten gemäß DSGVO.';
 include __DIR__ . '/../templates/header.php';
 ?>
 

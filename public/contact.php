@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+$pageTitle = 'Kontakt';
+$pageDescription = 'Nehmen Sie Kontakt mit der Andreas Pareigis Stiftung auf. Wir beantworten Ihre Fragen zur Förderung und unterstützen Sie bei Ihrem Antrag.';
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -12,7 +14,7 @@ include __DIR__ . '/../templates/header.php';
   </div>
 </div>
 
-<div class="container mb-5">
+<div class="container mb-5" style="padding-bottom: 8rem;">
   <div class="row g-4">
     
     <!-- Contact Information -->
@@ -157,7 +159,7 @@ include __DIR__ . '/../templates/header.php';
             <div class="form-check mb-4">
               <input class="form-check-input" type="checkbox" id="privacy" required>
               <label class="form-check-label" for="privacy">
-                Ich habe die <a href="statutes.php" target="_blank">Datenschutzbestimmungen</a> gelesen und akzeptiere diese. *
+                Ich habe die <a href="datenschutz.php" target="_blank">Datenschutzbestimmungen</a> gelesen und akzeptiere diese. *
               </label>
             </div>
 
@@ -226,5 +228,7 @@ include __DIR__ . '/../templates/header.php';
     </div>
   </div>
 </div>
+
+<div style="height: 150px;"></div>
 
 <?php include __DIR__ . '/../templates/footer.php'; ?>

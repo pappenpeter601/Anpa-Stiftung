@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+$pageTitle = 'Über uns';
+$pageDescription = 'Die Andreas Pareigis Stiftung ist eine gemeinnützige Stiftung mit Sitz in Soltau zur Förderung sozial benachteiligter Kinder und Jugendlicher in den Bereichen Jugendhilfe, Bildung und Kultur.';
 include __DIR__ . '/../templates/header.php';
 ?>
 

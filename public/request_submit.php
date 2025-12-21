@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/EmailService.php';
+require_once __DIR__ . '/../src/EmailTemplates.php';
 require_once __DIR__ . '/../src/helpers.php';
 
 // Load environment variables from .env file if it exists
@@ -19,39 +20,63 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $formData = [
-    'applicant' => trim($_POST['applicant'] ?? ''),
-    'organization' => trim($_POST['organization'] ?? ''),
+    'applicant' => trim($_POST['contact_person'] ?? ''),
+    'organization' => trim($_POST['org_name'] ?? ''),
     'email' => trim($_POST['email'] ?? ''),
     'phone' => trim($_POST['phone'] ?? ''),
-    'title' => trim($_POST['title'] ?? ''),
-    'category' => trim($_POST['category'] ?? ''),
-    'age_group' => trim($_POST['age_group'] ?? ''),
-    'beneficiaries' => trim($_POST['beneficiaries'] ?? ''),
-    'description' => trim($_POST['description'] ?? ''),
-    'goals' => trim($_POST['goals'] ?? ''),
-    'start_date' => trim($_POST['start_date'] ?? ''),
-    'duration' => trim($_POST['duration'] ?? ''),
-    'budget' => floatval($_POST['budget'] ?? 0),
-    'amount_requested' => floatval($_POST['amount_requested'] ?? 0),
-    'budget_breakdown' => trim($_POST['budget_breakdown'] ?? ''),
+    'title' => trim($_POST['project_name'] ?? ''),
+    'category' => 'Allgemein', // Not in form, set default
+    'age_group' => trim($_POST['target_group'] ?? ''),
+    'beneficiaries' => '0', // Not in form, set default
+    'description' => trim($_POST['project_description'] ?? ''),
+    'goals' => trim($_POST['project_goal'] ?? ''),
+    'start_date' => '', // Not in current form
+    'duration' => trim($_POST['timeline'] ?? ''),
+    'budget' => floatval($_POST['total_cost'] ?? 0),
+    'amount_requested' => floatval($_POST['requested_amount'] ?? 0),
+    'budget_breakdown' => trim($_POST['cost_details'] ?? ''),
     'other_funding' => trim($_POST['other_funding'] ?? ''),
-    'experience' => trim($_POST['experience'] ?? ''),
-    'community_need' => trim($_POST['community_need'] ?? ''),
-    'sustainability' => trim($_POST['sustainability'] ?? '')
+    'experience' => trim($_POST['org_purpose'] ?? ''),
+    'community_need' => trim($_POST['success_criteria'] ?? ''),
+    'sustainability' => trim($_POST['remarks'] ?? ''),
+    // Additional fields from form
+    'address' => trim($_POST['address'] ?? ''),
+    'iban' => trim($_POST['iban'] ?? ''),
+    'bic' => trim($_POST['bic'] ?? ''),
+    'org_since' => trim($_POST['org_since'] ?? ''),
+    'legal_form' => trim($_POST['legal_form'] ?? ''),
+    'previous_application' => trim($_POST['previous_application'] ?? ''),
+    'previous_project' => trim($_POST['previous_project'] ?? '')
 ];
 
 // Basic validation
-$required = ['applicant', 'organization', 'email', 'title', 'category', 'age_group', 'beneficiaries', 'description', 'goals', 'budget', 'amount_requested'];
+$required = ['applicant', 'organization', 'email', 'phone', 'title', 'description', 'goals', 'budget_breakdown', 'other_funding', 'duration'];
+$missingFields = [];
 foreach ($required as $field) {
     if (empty($formData[$field])) {
-        include __DIR__ . '/../templates/header.php';
-        echo '<div class="container my-5">';
-        echo '<div class="alert alert-danger">Bitte füllen Sie alle erforderlichen Felder aus.</div>';
-        echo '<a href="request.php" class="btn btn-primary">Zurück</a>';
-        echo '</div>';
-        include __DIR__ . '/../templates/footer.php';
-        exit;
+        $missingFields[] = $field;
     }
+}
+
+// Check budget fields separately (they can be 0)
+if (!isset($_POST['total_cost']) || $_POST['total_cost'] === '') {
+    $missingFields[] = 'total_cost (Gesamtkosten)';
+}
+if (!isset($_POST['requested_amount']) || $_POST['requested_amount'] === '') {
+    $missingFields[] = 'requested_amount (Beantragte Förderung)';
+}
+
+if (!empty($missingFields)) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-danger">';
+    echo '<h4>Bitte füllen Sie alle erforderlichen Felder aus.</h4>';
+    echo '<p>Folgende Felder fehlen: <strong>' . implode(', ', $missingFields) . '</strong></p>';
+    echo '</div>';
+    echo '<a href="request.php" class="btn btn-primary">Zurück</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
 }
 
 // Email validation
@@ -66,31 +91,15 @@ if (!filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
 }
 
 try {
-    // Generate PDF if mPDF is available
+    // Generate PDF using PDF-specific template (left-aligned, professional)
     $pdfPath = null;
-    $html = '<h1>Förderantrag: ' . htmlspecialchars($formData['title']) . '</h1>';
-    $html .= '<h3>Antragsteller</h3>';
-    $html .= '<p><strong>Name:</strong> ' . htmlspecialchars($formData['applicant']) . '</p>';
-    $html .= '<p><strong>Organisation:</strong> ' . htmlspecialchars($formData['organization']) . '</p>';
-    $html .= '<p><strong>E-Mail:</strong> ' . htmlspecialchars($formData['email']) . '</p>';
-    $html .= '<p><strong>Telefon:</strong> ' . htmlspecialchars($formData['phone']) . '</p>';
-    $html .= '<h3>Projektdetails</h3>';
-    $html .= '<p><strong>Kategorie:</strong> ' . htmlspecialchars($formData['category']) . '</p>';
-    $html .= '<p><strong>Zielgruppe:</strong> ' . htmlspecialchars($formData['age_group']) . '</p>';
-    $html .= '<p><strong>Begünstigte:</strong> ' . htmlspecialchars($formData['beneficiaries']) . '</p>';
-    $html .= '<h4>Beschreibung</h4>';
-    $html .= '<p>' . nl2br(htmlspecialchars($formData['description'])) . '</p>';
-    $html .= '<h4>Ziele</h4>';
-    $html .= '<p>' . nl2br(htmlspecialchars($formData['goals'])) . '</p>';
-    $html .= '<h3>Budget</h3>';
-    $html .= '<p><strong>Gesamtbudget:</strong> €' . number_format($formData['budget'], 2, ',', '.') . '</p>';
-    $html .= '<p><strong>Beantragte Förderung:</strong> €' . number_format($formData['amount_requested'], 2, ',', '.') . '</p>';
+    $html = EmailTemplates::generateProjectRequestPDF($formData);
     
     $pdfPath = generate_pdf($html, preg_replace('/[^a-z0-9_-]/i','_', $formData['title'] ?: 'antrag'));
     
-    // Send email
+    // Send email with PDF attachment
     $emailService = new EmailService();
-    $result = $emailService->sendProjectRequest($formData);
+    $result = $emailService->sendProjectRequest($formData, $pdfPath);
     
     include __DIR__ . '/../templates/header.php';
     echo '<div class="container my-5">';
@@ -103,7 +112,10 @@ try {
         echo '<p class="text-muted mb-4">Eine Kopie Ihres Antrags wurde an Ihre E-Mail-Adresse gesendet.</p>';
         
         if ($pdfPath) {
-            echo '<p class="mb-4"><a href="' . str_replace(__DIR__, BASE_URL, $pdfPath) . '" class="btn btn-outline-primary" target="_blank">';
+            // Extract filename from path and create download URL
+            $pdfFilename = basename($pdfPath);
+            $pdfUrl = rtrim(BASE_URL, '/') . '/download_pdf.php?file=' . urlencode($pdfFilename);
+            echo '<p class="mb-4"><a href="' . htmlspecialchars($pdfUrl) . '" class="btn btn-outline-primary">';
             echo '<svg width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>';
             echo 'PDF herunterladen</a></p>';
         }
@@ -117,7 +129,9 @@ try {
         echo '</div>';
         
         if ($pdfPath) {
-            echo '<p>Ihr Antrag wurde als PDF gespeichert: <a href="' . str_replace(__DIR__, BASE_URL, $pdfPath) . '" target="_blank">PDF herunterladen</a></p>';
+            $pdfFilename = basename($pdfPath);
+            $pdfUrl = rtrim(BASE_URL, '/') . '/download_pdf.php?file=' . urlencode($pdfFilename);
+            echo '<p>Ihr Antrag wurde als PDF gespeichert: <a href="' . htmlspecialchars($pdfUrl) . '">PDF herunterladen</a></p>';
         }
         
         echo '<a href="request.php" class="btn btn-primary">Zurück</a>';

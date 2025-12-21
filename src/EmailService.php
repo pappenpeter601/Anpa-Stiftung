@@ -62,10 +62,18 @@ class EmailService {
     /**
      * Send project request form email to admin with copy to applicant
      */
-    public function sendProjectRequest($formData) {
+    public function sendProjectRequest($formData, $pdfPath = null) {
         try {
             $subject = "Neuer Förderantrag: " . $formData['title'] . " von " . $formData['applicant'];
             $htmlBody = EmailTemplates::generateProjectRequestEmail($formData);
+            
+            $attachments = [];
+            if ($pdfPath && file_exists($pdfPath)) {
+                $attachments[] = [
+                    'path' => $pdfPath,
+                    'mime' => 'application/pdf'
+                ];
+            }
             
             // Send to admin with applicant in CC
             $result = $this->smtpClient->send(
@@ -76,7 +84,8 @@ class EmailService {
                 $htmlBody,
                 $formData['email'], // Reply-To
                 $formData['email'], // CC to applicant
-                true // isHtml
+                true, // isHtml
+                $attachments // PDF attachment
             );
             
             return ['success' => true, 'message' => 'Förderantrag erfolgreich eingereicht'];

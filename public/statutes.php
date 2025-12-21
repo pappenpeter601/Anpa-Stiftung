@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+$pageTitle = 'Satzung';
+$pageDescription = 'Offizielle Satzung der Andreas Pareigis Stiftung - eine gemeinnützige Stiftung des bürgerlichen Rechts mit Sitz in Soltau zur Förderung von Jugendhilfe, Bildung und Kultur.';
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -228,40 +230,13 @@ include __DIR__ . '/../templates/header.php';
               <p class="text-muted small mb-0">Finanzbericht und Tätigkeitsübersicht</p>
             </div>
           </li>
-          <li class="mb-3 d-flex align-items-center">
+          <li class="mb-0 d-flex align-items-center">
             <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
               <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
             </svg>
             <div>
               <strong>Steuerliche Freistellungsbescheinigung</strong>
               <p class="text-muted small mb-0">Bestätigung der Gemeinnützigkeit</p>
-            </div>
-          </li>
-          <li class="d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Antragsformular</strong>
-              <p class="text-muted small mb-0">Förderantrag für Projekte</p>
-            </div>
-          </li>
-          <li class="mb-3 d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Code of Conduct</strong>
-              <p class="text-muted small mb-0">Ethical guidelines for board members and staff</p>
-            </div>
-          </li>
-          <li class="mb-0 d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Conflict of Interest Policy</strong>
-              <p class="text-muted small mb-0">Procedures for managing potential conflicts</p>
             </div>
           </li>
         </ul>
@@ -274,11 +249,11 @@ include __DIR__ . '/../templates/header.php';
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-8">
-        <h3 class="fw-bold mb-3">Questions About Our Governance?</h3>
-        <p class="mb-0">We're committed to transparency and accountability. If you have questions about our statutes, governance, or operations, please don't hesitate to contact us.</p>
+        <h3 class="fw-bold mb-3">Fragen zu unserer Stiftung?</h3>
+        <p class="mb-0">Wir sind der Transparenz und Rechenschaftspflicht verpflichtet. Wenn Sie Fragen zu unserer Satzung, Verwaltung oder Tätigkeit haben, zögern Sie bitte nicht, uns zu kontaktieren.</p>
       </div>
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-        <a href="contact.php" class="btn btn-primary btn-lg">Contact Us</a>
+        <a href="contact.php" class="btn btn-primary btn-lg">Kontakt aufnehmen</a>
       </div>
     </div>
   </div>

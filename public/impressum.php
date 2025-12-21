@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+$pageTitle = 'Impressum';
+$pageDescription = 'Impressum und rechtliche Angaben der Andreas Pareigis Stiftung, Soltau.';
 include __DIR__ . '/../templates/header.php';
 ?>
 

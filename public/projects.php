@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/helpers.php';
+$pageTitle = 'Geförderte Projekte';
+$pageDescription = 'Entdecken Sie die von der Andreas Pareigis Stiftung geförderten Projekte für sozial benachteiligte Kinder und Jugendliche in Soltau. Bildung, Kultur und Jugendhilfe stehen im Fokus unserer Förderung.';
 $projects = load_json('data/projects.json');
 
 // Filter by year if provided

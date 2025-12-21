@@ -125,6 +125,149 @@ class EmailTemplates {
     }
     
     /**
+     * Generate PDF-formatted project request (left-aligned, professional)
+     */
+    public static function generateProjectRequestPDF($formData) {
+        $logoPath = __DIR__ . '/../public/assets/img/logo-120.png';
+        $logoHtml = '';
+        if (file_exists($logoPath)) {
+            $imageData = file_get_contents($logoPath);
+            $logoBase64 = 'data:image/png;base64,' . base64_encode($imageData);
+            $logoHtml = '<img src="' . $logoBase64 . '" alt="Andreas Pareigis Stiftung" width="120" height="51" style="margin-bottom: 20px;">';
+        }
+        
+        $html = '<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #333; }
+        h1 { color: #2563eb; font-size: 18pt; margin-bottom: 5px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+        h2 { color: #2563eb; font-size: 14pt; margin-top: 25px; margin-bottom: 10px; background: #e3f2fd; padding: 8px 12px; border-left: 4px solid #2563eb; }
+        h3 { color: #555; font-size: 11pt; margin-top: 15px; margin-bottom: 8px; font-weight: bold; }
+        table.info { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        table.info td { padding: 5px 10px; vertical-align: top; }
+        table.info td.label { font-weight: bold; width: 180px; color: #555; }
+        .section { margin-bottom: 20px; }
+        .budget-box { background: #e8f5e9; padding: 15px; border-left: 4px solid #2e7d32; margin: 15px 0; }
+        .budget-box .amount { font-size: 14pt; font-weight: bold; color: #2e7d32; }
+        .text-content { margin: 10px 0; padding: 10px; background: #f9f9f9; border-left: 3px solid #ddd; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #ddd; font-size: 9pt; color: #666; }
+    </style>
+</head>
+<body>
+    ' . $logoHtml . '
+    <h1>Förderantrag</h1>
+    <p style="color: #666; margin-bottom: 25px;">Eingereicht am ' . date('d.m.Y \u\m H:i') . ' Uhr</p>
+    
+    <div class="section">
+        <h2>Antragsteller</h2>
+        <table class="info">
+            <tr><td class="label">Name:</td><td>' . htmlspecialchars($formData['applicant'], ENT_QUOTES, 'UTF-8') . '</td></tr>
+            <tr><td class="label">Organisation:</td><td>' . htmlspecialchars($formData['organization'], ENT_QUOTES, 'UTF-8') . '</td></tr>
+            <tr><td class="label">E-Mail:</td><td>' . htmlspecialchars($formData['email'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+        
+        if (!empty($formData['phone'])) {
+            $html .= '<tr><td class="label">Telefon:</td><td>' . htmlspecialchars($formData['phone'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+        }
+        if (!empty($formData['address'])) {
+            $html .= '<tr><td class="label">Adresse:</td><td>' . nl2br(htmlspecialchars($formData['address'], ENT_QUOTES, 'UTF-8')) . '</td></tr>';
+        }
+        
+        $html .= '</table>
+    </div>
+    
+    <div class="section">
+        <h2>Projektinformationen</h2>
+        <table class="info">
+            <tr><td class="label">Projekttitel:</td><td><strong>' . htmlspecialchars($formData['title'], ENT_QUOTES, 'UTF-8') . '</strong></td></tr>
+            <tr><td class="label">Kategorie:</td><td>' . htmlspecialchars($formData['category'], ENT_QUOTES, 'UTF-8') . '</td></tr>
+            <tr><td class="label">Zielgruppe:</td><td>' . htmlspecialchars($formData['age_group'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+        
+        if (!empty($formData['duration'])) {
+            $html .= '<tr><td class="label">Projektdauer:</td><td>' . htmlspecialchars($formData['duration'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+        }
+        
+        $html .= '</table>
+        
+        <h3>Projektbeschreibung</h3>
+        <div class="text-content">' . nl2br(htmlspecialchars($formData['description'], ENT_QUOTES, 'UTF-8')) . '</div>
+        
+        <h3>Projektziele und erwartete Wirkung</h3>
+        <div class="text-content">' . nl2br(htmlspecialchars($formData['goals'], ENT_QUOTES, 'UTF-8')) . '</div>
+    </div>
+    
+    <div class="section">
+        <h2>Budgetinformationen</h2>
+        <div class="budget-box">
+            <table class="info">
+                <tr><td class="label">Gesamtbudget:</td><td class="amount">€ ' . number_format($formData['budget'], 2, ',', '.') . '</td></tr>
+                <tr><td class="label">Beantragte Förderung:</td><td class="amount" style="color: #2563eb;">€ ' . number_format($formData['amount_requested'], 2, ',', '.') . '</td></tr>
+            </table>
+        </div>';
+        
+        if (!empty($formData['budget_breakdown'])) {
+            $html .= '<h3>Budgetaufschlüsselung</h3>
+            <div class="text-content">' . nl2br(htmlspecialchars($formData['budget_breakdown'], ENT_QUOTES, 'UTF-8')) . '</div>';
+        }
+        
+        if (!empty($formData['other_funding'])) {
+            $html .= '<h3>Andere Finanzierungsquellen</h3>
+            <div class="text-content">' . nl2br(htmlspecialchars($formData['other_funding'], ENT_QUOTES, 'UTF-8')) . '</div>';
+        }
+        
+        $html .= '</div>';
+        
+        // Additional information
+        $hasAdditionalInfo = !empty($formData['experience']) || !empty($formData['community_need']) || !empty($formData['sustainability']);
+        if ($hasAdditionalInfo) {
+            $html .= '<div class="section"><h2>Zusätzliche Informationen</h2>';
+            
+            if (!empty($formData['experience'])) {
+                $html .= '<h3>Bisherige Erfahrung der Organisation</h3>
+                <div class="text-content">' . nl2br(htmlspecialchars($formData['experience'], ENT_QUOTES, 'UTF-8')) . '</div>';
+            }
+            
+            if (!empty($formData['community_need'])) {
+                $html .= '<h3>Bedarf in der Gemeinde / Erfolgskriterien</h3>
+                <div class="text-content">' . nl2br(htmlspecialchars($formData['community_need'], ENT_QUOTES, 'UTF-8')) . '</div>';
+            }
+            
+            if (!empty($formData['sustainability'])) {
+                $html .= '<h3>Nachhaltigkeitsplan / Anmerkungen</h3>
+                <div class="text-content">' . nl2br(htmlspecialchars($formData['sustainability'], ENT_QUOTES, 'UTF-8')) . '</div>';
+            }
+            
+            $html .= '</div>';
+        }
+        
+        // Bank details if available
+        if (!empty($formData['iban'])) {
+            $html .= '<div class="section">
+                <h2>Bankverbindung</h2>
+                <table class="info">
+                    <tr><td class="label">IBAN:</td><td>' . htmlspecialchars($formData['iban'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+            
+            if (!empty($formData['bic'])) {
+                $html .= '<tr><td class="label">BIC:</td><td>' . htmlspecialchars($formData['bic'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+            }
+            
+            $html .= '</table></div>';
+        }
+        
+        $html .= '
+    <div class="footer">
+        <p><strong>Andreas Pareigis Stiftung</strong><br>
+        Meinern 15a, 29614 Soltau<br>
+        Unterstützung von Kindern und Jugendlichen bis 18 Jahre</p>
+    </div>
+</body>
+</html>';
+        
+        return $html;
+    }
+    
+    /**
      * Generate project request email
      */
     public static function generateProjectRequestEmail($formData) {

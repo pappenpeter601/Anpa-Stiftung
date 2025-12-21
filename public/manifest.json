@@ -1,0 +1,40 @@
+{
+  "name": "Andreas Pareigis Stiftung",
+  "short_name": "AP Stiftung",
+  "description": "Gemeinnützige Stiftung zur Förderung sozial benachteiligter Kinder und Jugendlicher in Soltau",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "lang": "de",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/assets/img/logo-64.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/logo-120.png",
+      "sizes": "120x120",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/logo-200.png",
+      "sizes": "200x200",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/logo-400.png",
+      "sizes": "400x400",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "social", "charity"],
+  "screenshots": []
+}

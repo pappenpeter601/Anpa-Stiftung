@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+$pageTitle = 'Förderung anfragen';
+$pageDescription = 'Beantragen Sie eine Förderung für Ihr Projekt zur Unterstützung sozial benachteiligter Kinder und Jugendlicher in Soltau. Schnelle Bearbeitung innerhalb weniger Tage.';
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -66,8 +68,8 @@ include __DIR__ . '/../templates/header.php';
               <input class="form-control" name="iban" required placeholder="DE89 3704 0044 0532 0130 00">
             </div>
             <div class="col-md-4 mb-3">
-              <label class="form-label">BIC *</label>
-              <input class="form-control" name="bic" required placeholder="COBADEFFXXX">
+              <label class="form-label">BIC</label>
+              <input class="form-control" name="bic" placeholder="COBADEFFXXX">
             </div>
           </div>
 
@@ -191,10 +193,10 @@ include __DIR__ . '/../templates/header.php';
             <p class="mb-0 small"><strong>IV.</strong> Alle erforderlichen Genehmigungen wurden von uns eingeholt.</p>
           </div>
 
-          <div class="form-check mb-4 p-3 border rounded">
-            <input class="form-check-input" type="checkbox" id="agreeAll" name="agree_all" required>
-            <label class="form-check-label fw-bold" for="agreeAll">
-              Ich bestätige hiermit, dass ich die Satzung, die Allgemeinen Geschäftsbedingungen und alle anderen relevanten Dokumente gelesen und verstanden habe. Ich bestätige außerdem, dass der Antragsteller eine gemeinnützige Organisation ist, die gemäß der Satzung der Andreas Pareigis Stiftung förderfähig ist. *
+          <div class="form-check mb-4 p-4 border rounded bg-light">
+            <input class="form-check-input mt-1" type="checkbox" id="agreeAll" name="agree_all" required>
+            <label class="form-check-label" for="agreeAll" style="margin-left: 0.5rem; line-height: 1.6;">
+              Ich bestätige hiermit, dass ich die Satzung, die Allgemeinen Geschäftsbedingungen und die Datenschutzerklärung gelesen und verstanden habe. Ich bestätige außerdem, dass der Antragsteller eine gemeinnützige Organisation ist, die gemäß der Satzung der Andreas Pareigis Stiftung förderfähig ist. *
             </label>
           </div>
 

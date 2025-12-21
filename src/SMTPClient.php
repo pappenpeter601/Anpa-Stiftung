@@ -20,11 +20,11 @@ class SMTPClient {
         $this->timeout = $timeout;
     }
     
-    public function send($from, $fromName, $to, $subject, $body, $replyTo = null, $cc = null, $isHtml = false) {
+    public function send($from, $fromName, $to, $subject, $body, $replyTo = null, $cc = null, $isHtml = false, $attachments = []) {
         try {
             $this->connect();
             $this->authenticate();
-            $this->sendMail($from, $fromName, $to, $subject, $body, $replyTo, $cc, $isHtml);
+            $this->sendMail($from, $fromName, $to, $subject, $body, $replyTo, $cc, $isHtml, $attachments);
             $this->disconnect();
             return true;
         } catch (Exception $e) {
@@ -74,7 +74,7 @@ class SMTPClient {
         $this->sendCommand(base64_encode($this->password), ['235']);
     }
     
-    private function sendMail($from, $fromName, $to, $subject, $body, $replyTo, $cc = null, $isHtml = false) {
+    private function sendMail($from, $fromName, $to, $subject, $body, $replyTo, $cc = null, $isHtml = false, $attachments = []) {
         $this->sendCommand("MAIL FROM:<{$from}>");
         $this->sendCommand("RCPT TO:<{$to}>");
         
@@ -83,6 +83,8 @@ class SMTPClient {
         }
         
         $this->sendCommand("DATA");
+        
+        $boundary = "----=_Part_" . md5(uniqid());
         
         $headers = [];
         $headers[] = "From: {$fromName} <{$from}>";
@@ -97,18 +99,56 @@ class SMTPClient {
         $headers[] = "Date: " . date('r');
         $headers[] = "MIME-Version: 1.0";
         
-        if ($isHtml) {
+        if (!empty($attachments)) {
+            $headers[] = "Content-Type: multipart/mixed; boundary=\"{$boundary}\"";
+        } else if ($isHtml) {
             $headers[] = "Content-Type: text/html; charset=UTF-8";
         } else {
             $headers[] = "Content-Type: text/plain; charset=UTF-8";
         }
         
-        $headers[] = "Content-Transfer-Encoding: 8bit";
         $headers[] = "X-Mailer: Anpa-Stiftung-SMTP/1.0";
         $headers[] = "";
         
-        $processedBody = "\r\n" . $this->processEmailBody($body);
-        $email = implode("\r\n", $headers) . $processedBody . "\r\n.";
+        // Start building email body
+        $email = implode("\r\n", $headers);
+        
+        if (!empty($attachments)) {
+            // Multipart message with attachments
+            $email .= "\r\n--{$boundary}\r\n";
+            if ($isHtml) {
+                $email .= "Content-Type: text/html; charset=UTF-8\r\n";
+            } else {
+                $email .= "Content-Type: text/plain; charset=UTF-8\r\n";
+            }
+            $email .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+            $email .= $this->processEmailBody($body) . "\r\n";
+            
+            // Add attachments
+            foreach ($attachments as $attachment) {
+                if (file_exists($attachment['path'])) {
+                    $filename = basename($attachment['path']);
+                    $content = file_get_contents($attachment['path']);
+                    $encoded = chunk_split(base64_encode($content));
+                    
+                    $email .= "\r\n--{$boundary}\r\n";
+                    $email .= "Content-Type: {$attachment['mime']}; name=\"{$filename}\"\r\n";
+                    $email .= "Content-Transfer-Encoding: base64\r\n";
+                    $email .= "Content-Disposition: attachment; filename=\"{$filename}\"\r\n\r\n";
+                    $email .= $encoded;
+                }
+            }
+            
+            $email .= "\r\n--{$boundary}--";
+        } else {
+            // Simple message without attachments
+            if (!$isHtml) {
+                $email .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+            }
+            $email .= "\r\n" . $this->processEmailBody($body);
+        }
+        
+        $email .= "\r\n.";
         
         fwrite($this->socket, $email . "\r\n");
         
