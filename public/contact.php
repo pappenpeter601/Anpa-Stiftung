@@ -1,5 +1,16 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../src/SecurityHelper.php';
+
+// Set security headers
+SecurityHelper::setSecurityHeaders();
+
+$pageTitle = 'Kontakt';
+$pageDescription = 'Nehmen Sie Kontakt mit der Andreas Pareigis Stiftung auf. Wir beantworten Ihre Fragen zur Förderung und unterstützen Sie bei Ihrem Antrag.';
+
+// Generate CSRF token
+$csrfToken = SecurityHelper::generateCSRFToken();
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -12,7 +23,7 @@ include __DIR__ . '/../templates/header.php';
   </div>
 </div>
 
-<div class="container mb-5">
+<div class="container mb-5" style="padding-bottom: 8rem;">
   <div class="row g-4">
     
     <!-- Contact Information -->
@@ -114,6 +125,7 @@ include __DIR__ . '/../templates/header.php';
           </p>
 
           <form method="post" action="contact_submit.php">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">Vor- und Nachname *</label>
@@ -157,7 +169,7 @@ include __DIR__ . '/../templates/header.php';
             <div class="form-check mb-4">
               <input class="form-check-input" type="checkbox" id="privacy" required>
               <label class="form-check-label" for="privacy">
-                Ich habe die <a href="statutes.php" target="_blank">Datenschutzbestimmungen</a> gelesen und akzeptiere diese. *
+                Ich habe die <a href="datenschutz.php" target="_blank">Datenschutzbestimmungen</a> gelesen und akzeptiere diese. *
               </label>
             </div>
 
@@ -226,5 +238,7 @@ include __DIR__ . '/../templates/header.php';
     </div>
   </div>
 </div>
+
+<div style="height: 150px;"></div>
 
 <?php include __DIR__ . '/../templates/footer.php'; ?>

@@ -1,6 +1,92 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../src/SecurityHelper.php';
+
+// Set security headers
+SecurityHelper::setSecurityHeaders();
+
+$pageTitle = 'Förderung anfragen';
+$pageDescription = 'Beantragen Sie eine Förderung für Ihr Projekt zur Unterstützung sozial benachteiligter Kinder und Jugendlicher in Soltau. Schnelle Bearbeitung innerhalb weniger Tage.';
+
+// Generate CSRF token
+$csrfToken = SecurityHelper::generateCSRFToken();
+
+// Load questionnaire structure
+$questionnaire = load_json('data/questionnaire.json');
+
 include __DIR__ . '/../templates/header.php';
+
+/**
+ * Render a form field based on questionnaire configuration
+ */
+function renderField($question) {
+    $id = htmlspecialchars($question['id']);
+    $label = htmlspecialchars($question['label']);
+    $required = $question['required'] ? 'required' : '';
+    $requiredMark = $question['required'] ? ' *' : '';
+    $placeholder = htmlspecialchars($question['placeholder'] ?? '');
+    
+    // Build validation attributes
+    $validationAttrs = '';
+    if (isset($question['min_length'])) {
+        $validationAttrs .= ' minlength="' . (int)$question['min_length'] . '"';
+    }
+    if (isset($question['pattern'])) {
+        $validationAttrs .= ' pattern="' . htmlspecialchars($question['pattern']) . '"';
+    }
+    
+    $width = $question['width'] ?? 'full';
+    $colClass = match($width) {
+        'half' => 'col-md-6',
+        'one-third' => 'col-md-4',
+        'two-thirds' => 'col-md-8',
+        default => 'col-12'
+    };
+    
+    echo '<div class="' . $colClass . ' mb-3">';
+    echo '<label class="form-label">' . $label . $requiredMark . '</label>';
+    
+    switch ($question['type']) {
+        case 'textarea':
+            $rows = $question['rows'] ?? 3;
+            echo '<textarea class="form-control" name="' . $id . '" rows="' . $rows . '" ' . $required . $validationAttrs . ' placeholder="' . $placeholder . '"></textarea>';
+            break;
+            
+        case 'radio':
+            foreach ($question['options'] as $option) {
+                $optionValue = htmlspecialchars($option['value']);
+                $optionLabel = htmlspecialchars($option['label']);
+                $radioId = $id . '_' . preg_replace('/[^a-z0-9]/i', '', strtolower($optionValue));
+                echo '<div class="form-check">';
+                echo '<input class="form-check-input" type="radio" name="' . $id . '" id="' . $radioId . '" value="' . $optionValue . '" ' . $required . '>';
+                echo '<label class="form-check-label" for="' . $radioId . '">' . $optionLabel . '</label>';
+                echo '</div>';
+            }
+            break;
+            
+        case 'text':
+        default:
+            // Determine input type (use inputmode for numeric fields)
+            $inputType = 'text';
+            $inputMode = '';
+            if (isset($question['input_type']) && $question['input_type'] === 'numeric') {
+                $inputMode = ' inputmode="decimal"';
+            }
+            
+            if (isset($question['prefix'])) {
+                echo '<div class="input-group">';
+                echo '<span class="input-group-text">' . htmlspecialchars($question['prefix']) . '</span>';
+                echo '<input type="' . $inputType . '" class="form-control" name="' . $id . '" ' . $required . $validationAttrs . $inputMode . ' placeholder="' . $placeholder . '">';
+                echo '</div>';
+            } else {
+                echo '<input type="' . $inputType . '" class="form-control" name="' . $id . '" ' . $required . $validationAttrs . $inputMode . ' placeholder="' . $placeholder . '">';
+            }
+            break;
+    }
+    
+    echo '</div>';
+}
 ?>
 
 <div class="hero pt-5 pb-5 mb-5">
@@ -15,188 +101,108 @@ include __DIR__ . '/../templates/header.php';
 <div class="container mb-5">
   <div class="row">
     <div class="col-lg-10 mx-auto">
+      
+      <?php if (isset($questionnaire['criteria'])): ?>
       <div class="card border-0 shadow-lg p-4 mb-4">
-        <h4 class="fw-bold mb-3">Vor der Antragstellung</h4>
-        <p class="text-muted">Bitte stellen Sie sicher, dass Ihre Organisation die folgenden Kriterien erfüllt:</p>
+        <h4 class="fw-bold mb-3"><?php echo htmlspecialchars($questionnaire['criteria']['title']); ?></h4>
+        <p class="text-muted"><?php echo htmlspecialchars($questionnaire['criteria']['description']); ?></p>
         <ul class="text-muted">
-          <li>Ist in Soltau ansässig</li>
-          <li>Ist eine gemeinnützige Organisation</li>
-          <li>Fördert Kinder und Jugendliche bis 18 Jahre</li>
-          <li>Verfolgt Zwecke in den Bereichen: Jugendhilfe, Erziehung und Bildung, oder Kunst und Kultur</li>
+          <?php foreach ($questionnaire['criteria']['items'] as $item): ?>
+            <li><?php echo htmlspecialchars($item); ?></li>
+          <?php endforeach; ?>
         </ul>
+      </div>
+      <?php endif; ?>
+
+      <!-- Session Timeout Notice -->
+      <div class="alert alert-info border-0 shadow-sm mb-4">
+        <div class="d-flex align-items-start">
+          <svg width="24" height="24" fill="currentColor" class="me-3 flex-shrink-0 mt-1" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+          </svg>
+          <div>
+            <strong>Hinweis zur Bearbeitungszeit:</strong>
+            <p class="mb-0 mt-1">Sie haben <strong>2 Stunden Zeit</strong> zum Ausfüllen dieses Formulars. Danach läuft Ihre Sitzung aus Sicherheitsgründen ab. Bei längeren Texten empfehlen wir, diese zunächst in einem Texteditor vorzubereiten.</p>
+          </div>
+        </div>
       </div>
 
       <div class="card border-0 shadow-lg p-4">
         <h4 class="fw-bold mb-4">Förderantrag</h4>
         <form method="post" action="request_submit.php">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
           
-          <h6 class="fw-bold mb-3 text-primary">1. Antragsteller-Informationen</h6>
-          
-          <div class="mb-3">
-            <label class="form-label">Name der Organisation / Person *</label>
-            <input class="form-control" name="org_name" required placeholder="Name der Organisation oder Person">
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Kontaktperson (Position) *</label>
-            <input class="form-control" name="contact_person" required placeholder="Name und Position der Kontaktperson">
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Postanschrift *</label>
-            <textarea class="form-control" name="address" rows="2" required placeholder="Vollständige Postanschrift"></textarea>
-          </div>
-          
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Telefon *</label>
-              <input type="tel" class="form-control" name="phone" required placeholder="+49 123 456 7890">
+          <?php foreach ($questionnaire['sections'] as $section): ?>
+            <h6 class="fw-bold mb-3 <?php echo $section['order'] > 1 ? 'mt-4' : ''; ?> text-primary">
+              <?php echo $section['order']; ?>. <?php echo htmlspecialchars($section['title']); ?>
+            </h6>
+            
+            <?php if ($section['id'] === 'project_details'): ?>
+              <hr class="my-4">
+            <?php endif; ?>
+            
+            <?php 
+            // Check if we need a row wrapper for multi-column layout
+            $hasMultiColumn = false;
+            foreach ($section['questions'] as $q) {
+                if (isset($q['width']) && $q['width'] !== 'full') {
+                    $hasMultiColumn = true;
+                    break;
+                }
+            }
+            
+            if ($hasMultiColumn): ?>
+              <div class="row">
+                <?php foreach ($section['questions'] as $question): ?>
+                  <?php renderField($question); ?>
+                <?php endforeach; ?>
+              </div>
+            <?php else: ?>
+              <?php foreach ($section['questions'] as $question): ?>
+                <?php renderField($question); ?>
+              <?php endforeach; ?>
+            <?php endif; ?>
+            
+            <?php if ($section['id'] === 'remarks'): ?>
+              <hr class="my-4">
+            <?php endif; ?>
+          <?php endforeach; ?>
+
+          <?php if (isset($questionnaire['declaration'])): ?>
+            <h6 class="fw-bold mb-3 text-primary"><?php echo htmlspecialchars($questionnaire['declaration']['title']); ?></h6>
+
+            <div class="card bg-light border-0 p-3 mb-4">
+              <?php foreach ($questionnaire['declaration']['statements'] as $index => $statement): ?>
+                <p class="<?php echo $index < count($questionnaire['declaration']['statements']) - 1 ? 'mb-2' : 'mb-0'; ?> small">
+                  <strong><?php echo ['I', 'II', 'III', 'IV', 'V', 'VI'][$index]; ?>.</strong>
+                  <?php echo htmlspecialchars($statement); ?>
+                </p>
+              <?php endforeach; ?>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">E-Mail *</label>
-              <input type="email" class="form-control" name="email" required placeholder="ihre.email@beispiel.de">
+
+            <?php $agreement = $questionnaire['declaration']['agreement']; ?>
+            <div class="form-check mb-4 p-4 border rounded bg-light">
+              <input class="form-check-input mt-1" type="checkbox" id="<?php echo htmlspecialchars($agreement['id']); ?>" 
+                     name="<?php echo htmlspecialchars($agreement['id']); ?>" <?php echo $agreement['required'] ? 'required' : ''; ?>>
+              <label class="form-check-label" for="<?php echo htmlspecialchars($agreement['id']); ?>" style="margin-left: 0.5rem; line-height: 1.6;">
+                <?php 
+                  // Replace document names with links
+                  $labelText = $agreement['label'];
+                  $labelText = str_replace(
+                    ['Satzung', 'Allgemeinen Geschäftsbedingungen', 'Datenschutzerklärung'],
+                    [
+                      '<a href="' . BASE_URL . 'statutes.php" target="_blank" class="text-primary">Satzung</a>',
+                      '<a href="' . BASE_URL . 'datenschutz.php" target="_blank" class="text-primary">Allgemeinen Geschäftsbedingungen</a>',
+                      '<a href="' . BASE_URL . 'datenschutz.php" target="_blank" class="text-primary">Datenschutzerklärung</a>'
+                    ],
+                    htmlspecialchars($labelText)
+                  );
+                  echo $labelText;
+                ?> <?php echo $agreement['required'] ? '*' : ''; ?>
+              </label>
             </div>
-          </div>
-
-          <h6 class="fw-bold mb-3 mt-4 text-primary">2. Bankverbindung</h6>
-          
-          <div class="row">
-            <div class="col-md-8 mb-3">
-              <label class="form-label">IBAN *</label>
-              <input class="form-control" name="iban" required placeholder="DE89 3704 0044 0532 0130 00">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">BIC *</label>
-              <input class="form-control" name="bic" required placeholder="COBADEFFXXX">
-            </div>
-          </div>
-
-          <h6 class="fw-bold mb-3 mt-4 text-primary">3. Informationen zur Organisation</h6>
-          
-          <div class="mb-3">
-            <label class="form-label">Seit wann existiert die Organisation? *</label>
-            <input type="text" class="form-control" name="org_since" required placeholder="z.B. 2010 oder seit 15 Jahren">
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Rechtsform (z. B. Verein, gemeinnützige GmbH) *</label>
-            <input class="form-control" name="legal_form" required placeholder="z.B. eingetragener Verein (e.V.)">
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Welche Zwecke verfolgt die Organisation? *</label>
-            <textarea class="form-control" name="org_purpose" rows="3" required placeholder="Beschreiben Sie die Zwecke und Ziele Ihrer Organisation"></textarea>
-          </div>
-
-          <h6 class="fw-bold mb-3 mt-4 text-primary">4. Frühere Anträge</h6>
-          
-          <div class="mb-3">
-            <label class="form-label">Hat Ihre Organisation bereits einen Förderantrag an die Andreas Pareigis Stiftung gestellt? *</label>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="previous_application" id="prev_yes" value="Ja" required>
-              <label class="form-check-label" for="prev_yes">Ja</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="previous_application" id="prev_no" value="Nein" required>
-              <label class="form-check-label" for="prev_no">Nein</label>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Wenn ja, welches Projekt?</label>
-            <input class="form-control" name="previous_project" placeholder="Name des früheren Projekts">
-          </div>
-
-          <hr class="my-4">
-          
-          <h6 class="fw-bold mb-3 text-primary">5. Projektdetails</h6>
-          
-          <div class="mb-3">
-            <label class="form-label">Name des Projekts *</label>
-            <input class="form-control" name="project_name" required placeholder="Projekttitel">
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Ziel und Zweck des Projekts *</label>
-            <textarea class="form-control" name="project_goal" rows="4" required placeholder="Was sind die Ziele und Zwecke des Projekts?"></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Zielgruppe *</label>
-            <textarea class="form-control" name="target_group" rows="3" required placeholder="Welche Zielgruppe wird durch das Projekt erreicht?"></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Beschreibung / Durchführung *</label>
-            <textarea class="form-control" name="project_description" rows="6" required placeholder="Beschreiben Sie detailliert, wie das Projekt durchgeführt werden soll"></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Das Projekt ist erfolgreich, wenn: *</label>
-            <textarea class="form-control" name="success_criteria" rows="3" required placeholder="Welche Kriterien definieren den Erfolg des Projekts?"></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Angaben zu den Kosten *</label>
-            <textarea class="form-control" name="cost_details" rows="4" required placeholder="Detaillierte Kostenaufstellung des Projekts"></textarea>
-          </div>
-
-          <hr class="my-4">
-          
-          <h6 class="fw-bold mb-3 text-primary">6. Budgetinformationen</h6>
-          
-          <div class="mb-3">
-            <label class="form-label">Gesamtkosten des Projekts *</label>
-            <div class="input-group">
-              <span class="input-group-text">€</span>
-              <input type="number" class="form-control" name="total_cost" required min="0" step="0.01" placeholder="0.00">
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Erwartete Förderung durch die Andreas Pareigis Stiftung *</label>
-            <div class="input-group">
-              <span class="input-group-text">€</span>
-              <input type="number" class="form-control" name="requested_amount" required min="0" step="0.01" placeholder="0.00">
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Durch wen und wie wird das Projekt noch finanziell unterstützt? *</label>
-            <textarea class="form-control" name="other_funding" rows="3" required placeholder="Listen Sie alle anderen Finanzierungsquellen auf"></textarea>
-          </div>
-
-          <h6 class="fw-bold mb-3 mt-4 text-primary">7. Zeitplanung</h6>
-          
-          <div class="mb-3">
-            <label class="form-label">Zeitplan für das Projekt *</label>
-            <textarea class="form-control" name="timeline" rows="4" required placeholder="Beschreiben Sie den zeitlichen Ablauf des Projekts"></textarea>
-          </div>
-
-          <h6 class="fw-bold mb-3 mt-4 text-primary">8. Bemerkungen</h6>
-          
-          <div class="mb-4">
-            <label class="form-label">Bemerkungen</label>
-            <textarea class="form-control" name="remarks" rows="3" placeholder="Weitere Anmerkungen oder Informationen"></textarea>
-          </div>
-
-          <hr class="my-4">
-
-          <h6 class="fw-bold mb-3 text-primary">Erklärung</h6>
-
-          <div class="card bg-light border-0 p-3 mb-4">
-            <p class="mb-2 small"><strong>I.</strong> Ich bin autorisiert, den Förderantrag im Namen der oben genannten Organisation / Initiative einzureichen.</p>
-            <p class="mb-2 small"><strong>II.</strong> Ich bestätige, dass alle Informationen in diesem Förderantrag korrekt sind.</p>
-            <p class="mb-2 small"><strong>III.</strong> Falls sich die Angaben im Förderantrag in irgendeiner Weise ändern, werde ich die Andreas Pareigis Stiftung davon umgehend in Kenntnis setzen.</p>
-            <p class="mb-0 small"><strong>IV.</strong> Alle erforderlichen Genehmigungen wurden von uns eingeholt.</p>
-          </div>
-
-          <div class="form-check mb-4 p-3 border rounded">
-            <input class="form-check-input" type="checkbox" id="agreeAll" name="agree_all" required>
-            <label class="form-check-label fw-bold" for="agreeAll">
-              Ich bestätige hiermit, dass ich die Satzung, die Allgemeinen Geschäftsbedingungen und alle anderen relevanten Dokumente gelesen und verstanden habe. Ich bestätige außerdem, dass der Antragsteller eine gemeinnützige Organisation ist, die gemäß der Satzung der Andreas Pareigis Stiftung förderfähig ist. *
-            </label>
-          </div>
+          <?php endif; ?>
 
           <div class="d-grid gap-2">
             <button class="btn btn-primary btn-lg" type="submit">
@@ -213,3 +219,229 @@ include __DIR__ . '/../templates/header.php';
     </div>
   </div>
 </div>
+
+<style>
+.field-valid { border-color: #28a745 !important; background-color: #f0fdf4 !important; }
+.field-invalid { border-color: #dc3545 !important; background-color: #fef2f2 !important; }
+.validation-feedback { font-size: 0.875rem; margin-top: 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
+.validation-feedback.valid { color: #28a745; font-weight: 500; }
+.validation-feedback.invalid { color: #dc3545; font-weight: 500; }
+.char-counter { font-size: 0.8rem; color: #6c757d; margin-top: 0.25rem; }
+.char-counter.warning { color: #ffc107; font-weight: 500; }
+.char-counter.success { color: #28a745; font-weight: 500; }
+</style>
+
+<script>
+(function() {
+    'use strict';
+    
+    console.log('🚀 Form validation initializing...');
+    
+    const form = document.querySelector('form[action="request_submit.php"]');
+    if (!form) {
+        console.error('❌ Form not found');
+        return;
+    }
+    
+    console.log('✓ Form found');
+    
+    // Get all text inputs and textareas
+    const textFields = form.querySelectorAll('input[type="text"], textarea');
+    const checkboxFields = form.querySelectorAll('input[type="checkbox"][required]');
+    
+    console.log('📝 Found', textFields.length, 'text fields');
+    
+    // Setup text field validation
+    textFields.forEach(field => {
+        const container = field.closest('.mb-3');
+        if (!container) return;
+        
+        const minLength = field.getAttribute('minlength');
+        const pattern = field.getAttribute('pattern');
+        const required = field.hasAttribute('required');
+        
+        console.log('Setting up:', field.name, '| minlength:', minLength, '| pattern:', pattern ? 'yes' : 'no');
+        
+        // Create counter element
+        let counter = null;
+        if (minLength) {
+            counter = document.createElement('div');
+            counter.className = 'char-counter';
+            const insertAfter = field.closest('.input-group') || field;
+            insertAfter.parentNode.insertBefore(counter, insertAfter.nextSibling);
+        }
+        
+        // Create feedback element
+        const feedback = document.createElement('div');
+        feedback.className = 'validation-feedback';
+        const insertAfter = counter || field.closest('.input-group') || field;
+        insertAfter.parentNode.insertBefore(feedback, insertAfter.nextSibling);
+        
+        // Validate function
+        const validate = () => {
+            const value = field.value.trim();
+            const length = value.length;
+            
+            // Reset
+            field.classList.remove('field-valid', 'field-invalid');
+            feedback.className = 'validation-feedback';
+            feedback.textContent = '';
+            
+            // Update counter
+            if (counter && minLength) {
+                const min = parseInt(minLength);
+                const remaining = min - length;
+                
+                if (length === 0) {
+                    if (required) {
+                        counter.textContent = `0 / ${min} Zeichen (erforderlich)`;
+                        counter.className = 'char-counter';
+                    } else {
+                        counter.textContent = `0 / ${min} Zeichen (optional)`;
+                        counter.className = 'char-counter';
+                    }
+                } else if (length < min) {
+                    counter.textContent = `${length} / ${min} Zeichen (noch ${remaining} benötigt)`;
+                    counter.className = 'char-counter warning';
+                } else {
+                    counter.textContent = `✓ ${length} Zeichen`;
+                    counter.className = 'char-counter success';
+                }
+            }
+            
+            // Validation logic - empty field
+            if (length === 0) {
+                if (required) {
+                    feedback.className = 'validation-feedback invalid';
+                    feedback.textContent = '⚠️ Erforderlich';
+                    return false;
+                } else {
+                    // Optional field, empty is valid
+                    feedback.className = 'validation-feedback';
+                    feedback.textContent = '';
+                    return true;
+                }
+            }
+            
+            // Field has content - now validate min_length and pattern
+            if (minLength && length < parseInt(minLength)) {
+                feedback.className = 'validation-feedback invalid';
+                feedback.textContent = `⚠️ Mindestens ${minLength} Zeichen`;
+                field.classList.add('field-invalid');
+                return false;
+            }
+            
+            if (pattern) {
+                const regex = new RegExp(pattern);
+                if (!regex.test(value)) {
+                    feedback.className = 'validation-feedback invalid';
+                    feedback.textContent = getErrorMessage(field.name);
+                    field.classList.add('field-invalid');
+                    return false;
+                }
+            }
+            
+            // Valid!
+            field.classList.add('field-valid');
+            feedback.className = 'validation-feedback valid';
+            feedback.textContent = '✓ Gültig';
+            return true;
+        };
+        
+        // Attach events
+        field.addEventListener('input', validate);
+        field.addEventListener('keyup', validate);
+        field.addEventListener('blur', validate);
+        
+        // Initial validation if has value
+        if (field.value) validate();
+    });
+    
+    // Setup checkbox validation
+    checkboxFields.forEach(checkbox => {
+        const container = checkbox.closest('.mb-4') || checkbox.parentElement;
+        const feedback = document.createElement('div');
+        feedback.className = 'validation-feedback';
+        feedback.style.marginTop = '10px';
+        container.appendChild(feedback);
+        
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                feedback.className = 'validation-feedback valid';
+                feedback.textContent = '✓ Bestätigt';
+            } else {
+                feedback.className = 'validation-feedback invalid';
+                feedback.textContent = '⚠️ Bitte bestätigen';
+            }
+        });
+    });
+    
+    // Form submit validation
+    form.addEventListener('submit', (e) => {
+        let isValid = true;
+        
+        textFields.forEach(field => {
+            const value = field.value.trim();
+            const minLength = field.getAttribute('minlength');
+            const pattern = field.getAttribute('pattern');
+            const required = field.hasAttribute('required');
+            
+            // Required field must have value
+            if (required && !value) {
+                isValid = false;
+                field.classList.add('field-invalid');
+                return;
+            }
+            
+            // Optional field with no value is valid
+            if (!required && !value) {
+                return;
+            }
+            
+            // Field has value - validate min_length and pattern
+            if (minLength && value.length < parseInt(minLength)) {
+                isValid = false;
+                field.classList.add('field-invalid');
+            } else if (pattern && value) {
+                const regex = new RegExp(pattern);
+                if (!regex.test(value)) {
+                    isValid = false;
+                    field.classList.add('field-invalid');
+                }
+            }
+        });
+        
+        checkboxFields.forEach(checkbox => {
+            if (!checkbox.checked) {
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Bitte korrigieren Sie die markierten Felder.');
+            const firstInvalid = form.querySelector('.field-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus();
+            }
+        }
+    });
+    
+    function getErrorMessage(fieldName) {
+        const messages = {
+            'email': '⚠️ Ungültige E-Mail-Adresse',
+            'phone': '⚠️ Ungültige Telefonnummer',
+            'iban': '⚠️ Ungültige IBAN',
+            'bic': '⚠️ Ungültiger BIC',
+            'total_cost': '⚠️ Ungültiger Betrag',
+            'requested_amount': '⚠️ Ungültiger Betrag'
+        };
+        return messages[fieldName] || '⚠️ Ungültiges Format';
+    }
+    
+    console.log('✓ Validation ready!');
+})();
+</script>
+
+<?php include __DIR__ . '/../templates/footer.php'; ?>

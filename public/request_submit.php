@@ -1,7 +1,12 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/EmailService.php';
+require_once __DIR__ . '/../src/EmailTemplates.php';
 require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../src/SecurityHelper.php';
+
+// Set security headers
+SecurityHelper::setSecurityHeaders();
 
 // Load environment variables from .env file if it exists
 if (file_exists(__DIR__ . '/../.env')) {
@@ -18,40 +23,96 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$formData = [
-    'applicant' => trim($_POST['applicant'] ?? ''),
-    'organization' => trim($_POST['organization'] ?? ''),
-    'email' => trim($_POST['email'] ?? ''),
-    'phone' => trim($_POST['phone'] ?? ''),
-    'title' => trim($_POST['title'] ?? ''),
-    'category' => trim($_POST['category'] ?? ''),
-    'age_group' => trim($_POST['age_group'] ?? ''),
-    'beneficiaries' => trim($_POST['beneficiaries'] ?? ''),
-    'description' => trim($_POST['description'] ?? ''),
-    'goals' => trim($_POST['goals'] ?? ''),
-    'start_date' => trim($_POST['start_date'] ?? ''),
-    'duration' => trim($_POST['duration'] ?? ''),
-    'budget' => floatval($_POST['budget'] ?? 0),
-    'amount_requested' => floatval($_POST['amount_requested'] ?? 0),
-    'budget_breakdown' => trim($_POST['budget_breakdown'] ?? ''),
-    'other_funding' => trim($_POST['other_funding'] ?? ''),
-    'experience' => trim($_POST['experience'] ?? ''),
-    'community_need' => trim($_POST['community_need'] ?? ''),
-    'sustainability' => trim($_POST['sustainability'] ?? '')
-];
+// Validate CSRF token
+if (!isset($_POST['csrf_token']) || !SecurityHelper::validateCSRFToken($_POST['csrf_token'])) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-warning">';
+    echo '<h4 class="alert-heading"><svg width="24" height="24" fill="currentColor" class="me-2" style="display:inline-block;vertical-align:middle;" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>Sitzung abgelaufen</h4>';
+    echo '<p>Ihre Sitzung ist abgelaufen oder das Sicherheitstoken ist ungültig. Dies kann passieren, wenn:</p>';
+    echo '<ul class="mb-3"><li>Das Formular länger als 2 Stunden geöffnet war</li><li>Sie die Seite in einem anderen Tab neu geladen haben</li><li>Ihr Browser Cookies blockiert</li></ul>';
+    echo '<p class="mb-3"><strong>Hinweis:</strong> Ihre eingegebenen Daten gingen leider verloren. Bitte füllen Sie das Formular erneut aus.</p>';
+    echo '<p class="text-muted small">Tipp: Speichern Sie längere Texte zunächst in einem Texteditor, um Datenverlust zu vermeiden.</p>';
+    echo '</div>';
+    echo '<a href="request.php" class="btn btn-primary">Zurück zum Antragsformular</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
+// Rate limiting (3 submissions per 10 minutes per IP)
+$clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+if (!SecurityHelper::checkRateLimit('request_' . $clientIP, 3, 600)) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-danger">Zu viele Anträge. Bitte warten Sie einige Minuten und versuchen Sie es erneut.</div>';
+    echo '<a href="request.php" class="btn btn-primary">Zurück</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
+// Collect all form data directly (for new questionnaire-based structure)
+$formData = [];
+foreach ($_POST as $key => $value) {
+    if (is_array($value)) {
+        $formData[$key] = $value;
+    } else {
+        $formData[$key] = trim($value);
+    }
+}
+
+// Convert numeric values for backward compatibility
+if (isset($formData['total_cost'])) {
+    $formData['total_cost_numeric'] = floatval(str_replace(',', '.', $formData['total_cost']));
+}
+if (isset($formData['requested_amount'])) {
+    $formData['requested_amount_numeric'] = floatval(str_replace(',', '.', $formData['requested_amount']));
+}
+
+// Legacy field mappings for email templates (kept for backward compatibility)
+$formData['applicant'] = $formData['contact_person'] ?? '';
+$formData['organization'] = $formData['org_name'] ?? '';
+$formData['title'] = $formData['project_name'] ?? '';
+$formData['description'] = $formData['project_description'] ?? '';
+$formData['goals'] = $formData['project_goal'] ?? '';
+$formData['age_group'] = $formData['target_group'] ?? '';
+$formData['duration'] = $formData['timeline'] ?? '';
+$formData['budget'] = $formData['total_cost_numeric'] ?? 0;
+$formData['amount_requested'] = $formData['requested_amount_numeric'] ?? 0;
+$formData['budget_breakdown'] = $formData['cost_details'] ?? '';
+$formData['experience'] = $formData['org_purpose'] ?? '';
+$formData['community_need'] = $formData['success_criteria'] ?? '';
+$formData['sustainability'] = $formData['remarks'] ?? '';
 
 // Basic validation
-$required = ['applicant', 'organization', 'email', 'title', 'category', 'age_group', 'beneficiaries', 'description', 'goals', 'budget', 'amount_requested'];
+$required = ['applicant', 'organization', 'email', 'phone', 'title', 'description', 'goals', 'budget_breakdown', 'other_funding', 'duration'];
+$missingFields = [];
 foreach ($required as $field) {
     if (empty($formData[$field])) {
-        include __DIR__ . '/../templates/header.php';
-        echo '<div class="container my-5">';
-        echo '<div class="alert alert-danger">Bitte füllen Sie alle erforderlichen Felder aus.</div>';
-        echo '<a href="request.php" class="btn btn-primary">Zurück</a>';
-        echo '</div>';
-        include __DIR__ . '/../templates/footer.php';
-        exit;
+        $missingFields[] = $field;
     }
+}
+
+// Check budget fields separately (they can be 0)
+if (!isset($_POST['total_cost']) || $_POST['total_cost'] === '') {
+    $missingFields[] = 'total_cost (Gesamtkosten)';
+}
+if (!isset($_POST['requested_amount']) || $_POST['requested_amount'] === '') {
+    $missingFields[] = 'requested_amount (Beantragte Förderung)';
+}
+
+if (!empty($missingFields)) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-danger">';
+    echo '<h4>Bitte füllen Sie alle erforderlichen Felder aus.</h4>';
+    echo '<p>Folgende Felder fehlen: <strong>' . implode(', ', $missingFields) . '</strong></p>';
+    echo '</div>';
+    echo '<a href="request.php" class="btn btn-primary">Zurück</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
 }
 
 // Email validation
@@ -66,31 +127,22 @@ if (!filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
 }
 
 try {
-    // Generate PDF if mPDF is available
+    // Generate PDF using PDF-specific template (left-aligned, professional)
     $pdfPath = null;
-    $html = '<h1>Förderantrag: ' . htmlspecialchars($formData['title']) . '</h1>';
-    $html .= '<h3>Antragsteller</h3>';
-    $html .= '<p><strong>Name:</strong> ' . htmlspecialchars($formData['applicant']) . '</p>';
-    $html .= '<p><strong>Organisation:</strong> ' . htmlspecialchars($formData['organization']) . '</p>';
-    $html .= '<p><strong>E-Mail:</strong> ' . htmlspecialchars($formData['email']) . '</p>';
-    $html .= '<p><strong>Telefon:</strong> ' . htmlspecialchars($formData['phone']) . '</p>';
-    $html .= '<h3>Projektdetails</h3>';
-    $html .= '<p><strong>Kategorie:</strong> ' . htmlspecialchars($formData['category']) . '</p>';
-    $html .= '<p><strong>Zielgruppe:</strong> ' . htmlspecialchars($formData['age_group']) . '</p>';
-    $html .= '<p><strong>Begünstigte:</strong> ' . htmlspecialchars($formData['beneficiaries']) . '</p>';
-    $html .= '<h4>Beschreibung</h4>';
-    $html .= '<p>' . nl2br(htmlspecialchars($formData['description'])) . '</p>';
-    $html .= '<h4>Ziele</h4>';
-    $html .= '<p>' . nl2br(htmlspecialchars($formData['goals'])) . '</p>';
-    $html .= '<h3>Budget</h3>';
-    $html .= '<p><strong>Gesamtbudget:</strong> €' . number_format($formData['budget'], 2, ',', '.') . '</p>';
-    $html .= '<p><strong>Beantragte Förderung:</strong> €' . number_format($formData['amount_requested'], 2, ',', '.') . '</p>';
+    $html = EmailTemplates::generateProjectRequestPDF($formData);
     
-    $pdfPath = generate_pdf($html, preg_replace('/[^a-z0-9_-]/i','_', $formData['title'] ?: 'antrag'));
+    // Create filename-safe version of project title with proper German character handling
+    $projectTitle = $formData['project_name'] ?? $formData['title'] ?? 'antrag';
+    $filenameSafe = transliterate_to_ascii($projectTitle);
+    $filenameSafe = preg_replace('/[^a-z0-9_-]/i', '_', $filenameSafe);
+    $filenameSafe = preg_replace('/_+/', '_', $filenameSafe); // Replace multiple underscores with single
+    $filenameSafe = trim($filenameSafe, '_'); // Remove leading/trailing underscores
     
-    // Send email
+    $pdfPath = generate_pdf($html, $filenameSafe);
+    
+    // Send email with PDF attachment
     $emailService = new EmailService();
-    $result = $emailService->sendProjectRequest($formData);
+    $result = $emailService->sendProjectRequest($formData, $pdfPath);
     
     include __DIR__ . '/../templates/header.php';
     echo '<div class="container my-5">';
@@ -103,7 +155,10 @@ try {
         echo '<p class="text-muted mb-4">Eine Kopie Ihres Antrags wurde an Ihre E-Mail-Adresse gesendet.</p>';
         
         if ($pdfPath) {
-            echo '<p class="mb-4"><a href="' . str_replace(__DIR__, BASE_URL, $pdfPath) . '" class="btn btn-outline-primary" target="_blank">';
+            // Extract filename from path and create download URL
+            $pdfFilename = basename($pdfPath);
+            $pdfUrl = rtrim(BASE_URL, '/') . '/download_pdf.php?file=' . urlencode($pdfFilename);
+            echo '<p class="mb-4"><a href="' . htmlspecialchars($pdfUrl) . '" class="btn btn-outline-primary">';
             echo '<svg width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>';
             echo 'PDF herunterladen</a></p>';
         }
@@ -117,7 +172,9 @@ try {
         echo '</div>';
         
         if ($pdfPath) {
-            echo '<p>Ihr Antrag wurde als PDF gespeichert: <a href="' . str_replace(__DIR__, BASE_URL, $pdfPath) . '" target="_blank">PDF herunterladen</a></p>';
+            $pdfFilename = basename($pdfPath);
+            $pdfUrl = rtrim(BASE_URL, '/') . '/download_pdf.php?file=' . urlencode($pdfFilename);
+            echo '<p>Ihr Antrag wurde als PDF gespeichert: <a href="' . htmlspecialchars($pdfUrl) . '">PDF herunterladen</a></p>';
         }
         
         echo '<a href="request.php" class="btn btn-primary">Zurück</a>';

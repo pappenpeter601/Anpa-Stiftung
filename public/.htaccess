@@ -1,4 +1,7 @@
+# ===== Rewrite Engine =====
 RewriteEngine On
+
+# ===== Security Configuration =====
 
 # Protect sensitive files and directories
 <FilesMatch "^\.">
@@ -15,6 +18,53 @@ RewriteEngine On
 # Deny access to configuration directory
 RedirectMatch 403 ^/\.config/
 
+# Prevent directory listing
+Options -Indexes
+
+# ===== Security Headers =====
+<IfModule mod_headers.c>
+    # XSS Protection
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent MIME type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;"
+    
+    # Remove server information
+    Header unset Server
+    Header unset X-Powered-By
+    
+    # HTTPS enforcement (uncomment when SSL is active)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# ===== HTTPS Enforcement (uncomment when SSL is active) =====
+# <IfModule mod_rewrite.c>
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# ===== Rate Limiting (if mod_ratelimit available) =====
+<IfModule mod_ratelimit.c>
+    <Location "/contact_submit.php">
+        SetOutputFilter RATE_LIMIT
+        SetEnv rate-limit 400
+    </Location>
+    <Location "/request_submit.php">
+        SetOutputFilter RATE_LIMIT
+        SetEnv rate-limit 400
+    </Location>
+</IfModule>
+
+# ===== Pretty URLs (if needed) =====
 # If using Apache, point DocumentRoot to `public/` and this helps with pretty URLs
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

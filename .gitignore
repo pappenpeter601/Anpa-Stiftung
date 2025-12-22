@@ -4,6 +4,13 @@
 # Composer dependencies
 /vendor/
 
+# Storage - generated and uploaded files (keep folder structure, ignore contents)
+/storage/pdfs/*
+!/storage/pdfs/.gitkeep
+/storage/documents/*
+!/storage/documents/.gitkeep
+!/storage/documents/README.md
+
 # Temporary files
 *.tmp
 *.log

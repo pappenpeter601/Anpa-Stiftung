@@ -1,5 +1,19 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../src/helpers.php';
+$pageTitle = 'Satzung';
+$pageDescription = 'Offizielle Satzung der Andreas Pareigis Stiftung - eine gemeinnützige Stiftung des bürgerlichen Rechts mit Sitz in Soltau zur Förderung von Jugendhilfe, Bildung und Kultur.';
+
+// Load documents
+$documents = load_json('data/documents.json');
+// Filter visible documents and sort by order
+$documents = array_filter($documents, function($doc) {
+  return isset($doc['visible']) && $doc['visible'] === true;
+});
+usort($documents, function($a, $b) {
+  return ($a['order'] ?? 999) - ($b['order'] ?? 999);
+});
+
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -218,53 +232,36 @@ include __DIR__ . '/../templates/header.php';
 
       <div class="card border-0 shadow-sm p-4">
         <h5 class="fw-bold mb-3">Zusätzliche Dokumente</h5>
-        <ul class="list-unstyled mb-0">
-          <li class="mb-3 d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Jahresbericht 2024</strong>
-              <p class="text-muted small mb-0">Finanzbericht und Tätigkeitsübersicht</p>
-            </div>
-          </li>
-          <li class="mb-3 d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Steuerliche Freistellungsbescheinigung</strong>
-              <p class="text-muted small mb-0">Bestätigung der Gemeinnützigkeit</p>
-            </div>
-          </li>
-          <li class="d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Antragsformular</strong>
-              <p class="text-muted small mb-0">Förderantrag für Projekte</p>
-            </div>
-          </li>
-          <li class="mb-3 d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Code of Conduct</strong>
-              <p class="text-muted small mb-0">Ethical guidelines for board members and staff</p>
-            </div>
-          </li>
-          <li class="mb-0 d-flex align-items-center">
-            <svg width="20" height="20" fill="currentColor" class="me-3 text-primary" viewBox="0 0 16 16">
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-            </svg>
-            <div>
-              <strong>Conflict of Interest Policy</strong>
-              <p class="text-muted small mb-0">Procedures for managing potential conflicts</p>
-            </div>
-          </li>
-        </ul>
+        <?php if (empty($documents)): ?>
+          <p class="text-muted">Derzeit sind keine zusätzlichen Dokumente verfügbar.</p>
+        <?php else: ?>
+          <ul class="list-unstyled mb-0">
+            <?php foreach ($documents as $index => $doc): ?>
+              <li class="<?php echo $index < count($documents) - 1 ? 'mb-3' : 'mb-0'; ?> d-flex align-items-start">
+                <svg width="20" height="20" fill="currentColor" class="me-3 text-primary flex-shrink-0 mt-1" viewBox="0 0 16 16">
+                  <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                </svg>
+                <div class="flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <strong><?php echo htmlspecialchars($doc['title']); ?></strong>
+                      <p class="text-muted small mb-0"><?php echo htmlspecialchars($doc['description'] ?? ''); ?></p>
+                    </div>
+                    <a href="<?php echo BASE_URL; ?>download_pdf.php?doc=<?php echo urlencode($doc['filename']); ?>" 
+                       class="btn btn-sm btn-outline-primary ms-3 flex-shrink-0"
+                       target="_blank">
+                      <svg width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                      </svg>
+                      Download
+                    </a>
+                  </div>
+                </div>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -274,11 +271,11 @@ include __DIR__ . '/../templates/header.php';
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-8">
-        <h3 class="fw-bold mb-3">Questions About Our Governance?</h3>
-        <p class="mb-0">We're committed to transparency and accountability. If you have questions about our statutes, governance, or operations, please don't hesitate to contact us.</p>
+        <h3 class="fw-bold mb-3">Fragen zu unserer Stiftung?</h3>
+        <p class="mb-0">Wir sind der Transparenz und Rechenschaftspflicht verpflichtet. Wenn Sie Fragen zu unserer Satzung, Verwaltung oder Tätigkeit haben, zögern Sie bitte nicht, uns zu kontaktieren.</p>
       </div>
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-        <a href="contact.php" class="btn btn-primary btn-lg">Contact Us</a>
+        <a href="contact.php" class="btn btn-primary btn-lg">Kontakt aufnehmen</a>
       </div>
     </div>
   </div>

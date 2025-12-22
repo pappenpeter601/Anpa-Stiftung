@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+$pageTitle = 'Datenschutz';
+$pageDescription = 'Datenschutzerklärung der Andreas Pareigis Stiftung - Informationen zum Umgang mit personenbezogenen Daten gemäß DSGVO.';
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -198,9 +200,16 @@ include __DIR__ . '/../templates/header.php';
         </ul>
         
         <h3 class="fw-bold mt-4 mb-3">9. Cookies und Tracking</h3>
-        <p>Unsere Website verwendet keine Tracking-Cookies oder Analyse-Tools von Drittanbietern. Wir verwenden nur technisch notwendige Cookies, die für den Betrieb der Website erforderlich sind.</p>
+        <p>Unsere Website verwendet keine Tracking-Cookies oder Analyse-Tools von Drittanbietern. Wir verwenden nur technisch notwendige Cookies, die für den Betrieb der Website erforderlich sind (z.B. Session-Cookies für CSRF-Schutz bei Formularen).</p>
         
-        <h3 class="fw-bold mt-4 mb-3">10. Kontakt und Beschwerderecht</h3>
+        <h3 class="fw-bold mt-4 mb-3">10. Externe Ressourcen und CDN</h3>
+        <p><strong>Bootstrap Framework (jsDelivr CDN):</strong> Wir nutzen das Bootstrap CSS-Framework über das Content Delivery Network (CDN) von jsDelivr. Beim Laden der Website wird eine Verbindung zu den Servern von jsDelivr hergestellt. Dabei kann Ihre IP-Adresse verarbeitet werden.</p>
+        <p>jsDelivr ist ein Service von ProspectOne Sp. z o.o., Polen. Weitere Informationen finden Sie in der Datenschutzerklärung von jsDelivr: <a href="https://www.jsdelivr.com/privacy-policy-jsdelivr-net" target="_blank">https://www.jsdelivr.com/privacy-policy-jsdelivr-net</a></p>
+        <p><strong>Rechtsgrundlage:</strong> Berechtigtes Interesse gemäß Art. 6 Abs. 1 lit. f DSGVO (schnellere Ladezeiten und bessere Performance)</p>
+        
+        <p><strong>Schriftarten (Fonts):</strong> Alle auf dieser Website verwendeten Schriftarten (Inter Font) werden lokal von unseren Servern geladen. Es findet keine Übertragung von Daten an Dritte statt.</p>
+        
+        <h3 class="fw-bold mt-4 mb-3">11. Kontakt und Beschwerderecht</h3>
         <p>Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte wenden Sie sich bitte an:</p>
         <p>
           <strong>Andreas Pareigis Stiftung</strong><br>

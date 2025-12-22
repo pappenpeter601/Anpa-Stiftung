@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/helpers.php';
+$pageTitle = 'Unser Team';
+$pageDescription = 'Lernen Sie das Team der Andreas Pareigis Stiftung kennen: Vorstand und Kuratorium setzen sich für die Förderung sozial benachteiligter Kinder und Jugendlicher in Soltau ein.';
 $team = load_json('data/team.json');
 include __DIR__ . '/../templates/header.php';
 ?>

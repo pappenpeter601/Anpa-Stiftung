@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../src/helpers.php';
+$pageTitle = 'Über uns';
+$pageDescription = 'Die Andreas Pareigis Stiftung ist eine gemeinnützige Stiftung mit Sitz in Soltau zur Förderung sozial benachteiligter Kinder und Jugendlicher in den Bereichen Jugendhilfe, Bildung und Kultur.';
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -34,71 +37,6 @@ include __DIR__ . '/../templates/header.php';
           <p class="mb-2"><strong>Sitz:</strong> Meinern 15a, 29614 Soltau</p>
           <p class="mb-2"><strong>Status:</strong> Gemeinnützig anerkannt</p>
           <p class="mb-0"><strong>Fördergebiet:</strong> Ausschließlich in Soltau ansässige gemeinnützige Einrichtungen</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="container mb-5">
-  <div class="section-header">
-    <h2>Geförderte Institutionen</h2>
-    <p>Beispiele von Einrichtungen, die Fördermittel für entsprechende Projekte erhalten können</p>
-  </div>
-  <div class="row g-4">
-    <div class="col-md-6">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h5 class="fw-bold">Heidekreis-Musikschule e. V.</h5>
-          <p class="text-muted">Unterstützung von Kindern und Jugendlichen im Rahmen der Sozialermäßigung</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h5 class="fw-bold">Verein Sprungbrett e. V.</h5>
-          <p class="text-muted">Betreuungsweisungen, Arbeitsauflagen und Täter-Opfer-Ausgleichsverfahren zur Verbesserung der Jugendstrafrechtspflege</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h5 class="fw-bold">Förderverein der Oberschule Soltau e.V.</h5>
-          <p class="text-muted">Hilfe für sozial benachteiligte Schüler, z.B. im Bereich der Nachhilfe</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h5 class="fw-bold">Heimatbund Soltau e.V.</h5>
-          <p class="text-muted">Projekte, die "Jung" und "Alt" zusammenbringen sowie Schülerprojekte zur Geschichtsforschung</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h5 class="fw-bold">Erlebniswerkstatt Buchdruck-Museum Soltau e.V.</h5>
-          <p class="text-muted">Schülerprojekte aller Art</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h5 class="fw-bold">Kulturinitiative Soltau e.V.</h5>
-          <p class="text-muted">Veranstaltungen mit und für Schüler und Kinder</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-12">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h5 class="fw-bold">Freundeskreis Filmmuseum Bendestorf e.V.</h5>
-          <p class="text-muted">Klassenfahrtzuschüsse von Soltau nach Bendestorf, Schulprojekte, Workshops für sozial benachteiligte Schüler</p>
         </div>
       </div>
     </div>
@@ -152,8 +90,14 @@ include __DIR__ . '/../templates/header.php';
       </div>
     </div>
   </div>
-      </div>
-    </div>
+</div>
+
+<div class="container mb-5">
+  <div class="section-header">
+    <h2>Unsere Werte</h2>
+    <p>Grundsätze, die unser Handeln leiten</p>
+  </div>
+  <div class="row g-4">
     <div class="col-md-4">
       <div class="card h-100 border-0 shadow-sm">
         <div class="card-body">

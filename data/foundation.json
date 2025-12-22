@@ -1,0 +1,38 @@
+{
+  "name": "Andreas Pareigis Stiftung",
+  "legal_form": "Rechtsfähige Stiftung bürgerlichen Rechts",
+  "founded": "2024",
+  "address": {
+    "street": "Meinern 15a",
+    "postal_code": "29614",
+    "city": "Soltau",
+    "country": "Deutschland"
+  },
+  "contact": {
+    "email": "info@andreas-pareigis-stiftung.de",
+    "phone": "(+49)(0)1520 89 879 31",
+    "website": "https://andreas-pareigis-stiftung.de"
+  },
+  "bank_account": {
+    "account_holder": "Andreas Pareigis Stiftung",
+    "bank_name": "VB Lüneburger Heide",
+    "iban": "DE86 2406 0300 2427 0776 00",
+    "bic": "GENODEF1NBU"
+  },
+  "tax": {
+    "tax_id": "41/211/01110",
+    "tax_office": "Finanzamt Soltau",
+    "charity_status": "gemeinnützig",
+    "charity_certificate_date": "2022-12-29"
+  },
+  "registration": {
+    "registry": "Stiftungsverzeichnis des Landes Niedersachsen",
+    "registration_number": "",
+    "registration_date": ""
+  },
+  "purpose": "Unterstützung von sozial benachteiligten Kindern und Jugendlichen bis 18 Jahre in Soltau und Umgebung durch Förderung von Bildung, Kultur und Integration.",
+  "board": {
+    "chairman": "Peter Scharringhausen",
+    "members": []
+  }
+}

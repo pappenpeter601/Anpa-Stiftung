@@ -1,0 +1,14 @@
+# robots.txt for Andreas Pareigis Stiftung
+
+User-agent: *
+Allow: /
+Disallow: /vendor/
+Disallow: /.config/
+Disallow: /contact_submit.php
+Disallow: /request_submit.php
+
+# Sitemap location
+Sitemap: https://andreas-pareigis-stiftung.de/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 5
