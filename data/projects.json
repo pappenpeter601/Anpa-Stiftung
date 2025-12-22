@@ -3,27 +3,31 @@
     "title": "Kinder- und Jugendhospizdienst Calluna e.V.",
     "summary": "Lastenfahrrad zur Teilnahme an Aktivitäten für betroffene Kinder und Jugendliche",
     "description": "Anschaffung eines Lastenfahrrads, um betroffenen Kindern und Jugendlichen die Möglichkeit zu geben, an Aktivitäten teilzunehmen und ihre Mobilität zu verbessern.",
-    "image": "project-placeholder.svg",
+    "image": "kids-support-placeholder.svg",
+    "website": "https://kjhd-calluna.de/",
     "year": 2025,
     "category": "Jugendhilfe",
-    "amount": "3.700,- €"
+    "amount": "3.630,00 €"
   },
   {
     "title": "Förderverein der OBS Soltau e.V.",
-    "summary": "RespekTier(t) - Sozialtraining der neuen 5. Klassen",
+    "summary": "RespekTier(t) - Sozialtraining der neuen 5. Klassen (https://www.respektiert-gbr.de)",
     "description": "Sozialtraining für die neuen 5. Klassen der Oberschule Soltau zur Förderung von Respekt, Empathie und sozialem Miteinander.",
-    "image": "project-placeholder.svg",
+    "image": "kids-support-placeholder.svg",
+    "website": "https://obs-soltau.de/foerderverein/",
     "year": 2024,
     "category": "Erziehung und Bildung",
-    "amount": "600,- €"
+    "amount": "630,00 €"
   },
   {
     "title": "Förderverein der Ev. Kindertagesstätte",
     "summary": "Finanzierung Abschlussausflüge",
     "description": "Unterstützung bei der Finanzierung von Abschlussausflügen für Kinder der evangelischen Kindertagesstätte, um allen Kindern unabhängig vom Einkommen der Eltern die Teilnahme zu ermöglichen.",
-    "image": "project-placeholder.svg",
+    "image": "kids-support-placeholder.svg",
+    "website": "https://evkitastjohannis_soltau.wir-e.de",
+    "fetch_logo": false,
     "year": 2024,
     "category": "Erziehung und Bildung",
-    "amount": "1.000,- €"
+    "amount": "900,00 €"
   }
 ]

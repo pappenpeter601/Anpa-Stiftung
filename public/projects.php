@@ -72,12 +72,49 @@ include __DIR__ . '/../templates/header.php';
     <?php else: ?>
       <?php foreach ($projects as $p): ?>
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm project-card">
-            <img src="<?php echo BASE_URL; ?>assets/img/<?php echo htmlspecialchars($p['image'] ?? 'project-placeholder.svg'); ?>" 
-                 class="card-img-top" 
-                 alt="<?php echo htmlspecialchars($p['title']); ?>">
+          <?php 
+            $hasLink = !empty($p['website']);
+            $fetchLogo = !isset($p['fetch_logo']) || $p['fetch_logo'] !== false;
+            $placeholderUrl = BASE_URL . 'assets/img/kids-support-placeholder.svg';
+          ?>
+          
+          <?php if ($hasLink): ?>
+          <a href="<?php echo htmlspecialchars($p['website']); ?>" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+          <?php endif; ?>
+          
+          <div class="card h-100 shadow-sm project-card <?php echo $hasLink ? 'hoverable-card' : ''; ?>">
+            <div class="position-relative">
+              <img src="<?php echo $placeholderUrl; ?>" 
+                   class="card-img-top project-logo" 
+                   alt="<?php echo htmlspecialchars($p['title']); ?>"
+                   data-website="<?php echo ($hasLink && $fetchLogo) ? htmlspecialchars($p['website']) : ''; ?>"
+                   style="object-fit: contain; padding: 20px; background: #f8f9fa; min-height: 200px;">
+              <?php if ($hasLink && $fetchLogo): ?>
+              <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge bg-light text-dark" style="font-size: 0.7rem; opacity: 0.8;" title="Logo wird von der Website geladen">
+                  <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                  </svg>
+                  Externe Quelle
+                </span>
+              </div>
+              <?php endif; ?>
+              <div class="logo-loading-spinner position-absolute top-50 start-50 translate-middle" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Lädt Logo...</span>
+                </div>
+              </div>
+            </div>
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title"><?php echo htmlspecialchars($p['title']); ?></h5>
+              <h5 class="card-title">
+                <?php echo htmlspecialchars($p['title']); ?>
+                <?php if ($hasLink): ?>
+                <svg width="14" height="14" fill="currentColor" class="ms-1" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;opacity:0.5;">
+                  <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                  <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                </svg>
+                <?php endif; ?>
+              </h5>
               <p class="card-text text-muted flex-grow-1"><?php echo htmlspecialchars($p['summary'] ?? ''); ?></p>
               
               <?php if (!empty($p['description'])): ?>
@@ -109,6 +146,10 @@ include __DIR__ . '/../templates/header.php';
               </div>
             </div>
           </div>
+          
+          <?php if ($hasLink): ?>
+          </a>
+          <?php endif; ?>
         </div>
       <?php endforeach; ?>
     <?php endif; ?>
@@ -128,5 +169,77 @@ include __DIR__ . '/../templates/header.php';
     </div>
   </div>
 </div>
+
+<script>
+// Lazy load project logos from external websites
+document.addEventListener('DOMContentLoaded', function() {
+  const projectLogos = document.querySelectorAll('.project-logo[data-website]');
+  
+  // Use Intersection Observer for true lazy loading
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        loadLogo(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    rootMargin: '50px' // Start loading 50px before image is visible
+  });
+  
+  projectLogos.forEach(img => {
+    observer.observe(img);
+  });
+  
+  function loadLogo(imgElement) {
+    const website = imgElement.getAttribute('data-website');
+    if (!website) return;
+    
+    const spinner = imgElement.parentElement.querySelector('.logo-loading-spinner');
+    const card = imgElement.closest('.project-card');
+    
+    try {
+      const url = new URL(website);
+      const domain = url.hostname;
+      
+      // Try Google's favicon service (most reliable)
+      const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+      
+      // Show loading spinner
+      if (spinner) spinner.style.display = 'block';
+      
+      // Test if logo loads
+      const testImg = new Image();
+      testImg.onload = function() {
+        // Successfully loaded, update the main image
+        imgElement.src = faviconUrl;
+        if (spinner) spinner.style.display = 'none';
+        
+        // Add loaded class for animation
+        if (card) card.classList.add('logo-loaded');
+      };
+      
+      testImg.onerror = function() {
+        // Failed to load, keep placeholder
+        if (spinner) spinner.style.display = 'none';
+        console.log('Logo could not be loaded for:', domain);
+      };
+      
+      // Set timeout for loading
+      setTimeout(() => {
+        if (spinner && spinner.style.display !== 'none') {
+          spinner.style.display = 'none';
+        }
+      }, 5000); // 5 second timeout
+      
+      testImg.src = faviconUrl;
+      
+    } catch (e) {
+      console.error('Invalid website URL:', website);
+      if (spinner) spinner.style.display = 'none';
+    }
+  }
+});
+</script>
 
 <?php include __DIR__ . '/../templates/footer.php'; ?>

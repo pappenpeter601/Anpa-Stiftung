@@ -1,7 +1,16 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../src/SecurityHelper.php';
+
+// Set security headers
+SecurityHelper::setSecurityHeaders();
+
 $pageTitle = 'Kontakt';
 $pageDescription = 'Nehmen Sie Kontakt mit der Andreas Pareigis Stiftung auf. Wir beantworten Ihre Fragen zur Förderung und unterstützen Sie bei Ihrem Antrag.';
+
+// Generate CSRF token
+$csrfToken = SecurityHelper::generateCSRFToken();
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -116,6 +125,7 @@ include __DIR__ . '/../templates/header.php';
           </p>
 
           <form method="post" action="contact_submit.php">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">Vor- und Nachname *</label>

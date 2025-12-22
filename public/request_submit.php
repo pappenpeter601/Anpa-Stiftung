@@ -3,6 +3,10 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/EmailService.php';
 require_once __DIR__ . '/../src/EmailTemplates.php';
 require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../src/SecurityHelper.php';
+
+// Set security headers
+SecurityHelper::setSecurityHeaders();
 
 // Load environment variables from .env file if it exists
 if (file_exists(__DIR__ . '/../.env')) {
@@ -19,35 +23,67 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$formData = [
-    'applicant' => trim($_POST['contact_person'] ?? ''),
-    'organization' => trim($_POST['org_name'] ?? ''),
-    'email' => trim($_POST['email'] ?? ''),
-    'phone' => trim($_POST['phone'] ?? ''),
-    'title' => trim($_POST['project_name'] ?? ''),
-    'category' => 'Allgemein', // Not in form, set default
-    'age_group' => trim($_POST['target_group'] ?? ''),
-    'beneficiaries' => '0', // Not in form, set default
-    'description' => trim($_POST['project_description'] ?? ''),
-    'goals' => trim($_POST['project_goal'] ?? ''),
-    'start_date' => '', // Not in current form
-    'duration' => trim($_POST['timeline'] ?? ''),
-    'budget' => floatval($_POST['total_cost'] ?? 0),
-    'amount_requested' => floatval($_POST['requested_amount'] ?? 0),
-    'budget_breakdown' => trim($_POST['cost_details'] ?? ''),
-    'other_funding' => trim($_POST['other_funding'] ?? ''),
-    'experience' => trim($_POST['org_purpose'] ?? ''),
-    'community_need' => trim($_POST['success_criteria'] ?? ''),
-    'sustainability' => trim($_POST['remarks'] ?? ''),
-    // Additional fields from form
-    'address' => trim($_POST['address'] ?? ''),
-    'iban' => trim($_POST['iban'] ?? ''),
-    'bic' => trim($_POST['bic'] ?? ''),
-    'org_since' => trim($_POST['org_since'] ?? ''),
-    'legal_form' => trim($_POST['legal_form'] ?? ''),
-    'previous_application' => trim($_POST['previous_application'] ?? ''),
-    'previous_project' => trim($_POST['previous_project'] ?? '')
-];
+// Validate CSRF token
+if (!isset($_POST['csrf_token']) || !SecurityHelper::validateCSRFToken($_POST['csrf_token'])) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-warning">';
+    echo '<h4 class="alert-heading"><svg width="24" height="24" fill="currentColor" class="me-2" style="display:inline-block;vertical-align:middle;" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>Sitzung abgelaufen</h4>';
+    echo '<p>Ihre Sitzung ist abgelaufen oder das Sicherheitstoken ist ungültig. Dies kann passieren, wenn:</p>';
+    echo '<ul class="mb-3"><li>Das Formular länger als 2 Stunden geöffnet war</li><li>Sie die Seite in einem anderen Tab neu geladen haben</li><li>Ihr Browser Cookies blockiert</li></ul>';
+    echo '<p class="mb-3"><strong>Hinweis:</strong> Ihre eingegebenen Daten gingen leider verloren. Bitte füllen Sie das Formular erneut aus.</p>';
+    echo '<p class="text-muted small">Tipp: Speichern Sie längere Texte zunächst in einem Texteditor, um Datenverlust zu vermeiden.</p>';
+    echo '</div>';
+    echo '<a href="request.php" class="btn btn-primary">Zurück zum Antragsformular</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
+// Rate limiting (3 submissions per 10 minutes per IP)
+$clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+if (!SecurityHelper::checkRateLimit('request_' . $clientIP, 3, 600)) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-danger">Zu viele Anträge. Bitte warten Sie einige Minuten und versuchen Sie es erneut.</div>';
+    echo '<a href="request.php" class="btn btn-primary">Zurück</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
+// Collect all form data directly (for new questionnaire-based structure)
+$formData = [];
+foreach ($_POST as $key => $value) {
+    if (is_array($value)) {
+        $formData[$key] = $value;
+    } else {
+        $formData[$key] = trim($value);
+    }
+}
+
+// Convert numeric values for backward compatibility
+if (isset($formData['total_cost'])) {
+    $formData['total_cost_numeric'] = floatval(str_replace(',', '.', $formData['total_cost']));
+}
+if (isset($formData['requested_amount'])) {
+    $formData['requested_amount_numeric'] = floatval(str_replace(',', '.', $formData['requested_amount']));
+}
+
+// Legacy field mappings for email templates (kept for backward compatibility)
+$formData['applicant'] = $formData['contact_person'] ?? '';
+$formData['organization'] = $formData['org_name'] ?? '';
+$formData['title'] = $formData['project_name'] ?? '';
+$formData['description'] = $formData['project_description'] ?? '';
+$formData['goals'] = $formData['project_goal'] ?? '';
+$formData['age_group'] = $formData['target_group'] ?? '';
+$formData['duration'] = $formData['timeline'] ?? '';
+$formData['budget'] = $formData['total_cost_numeric'] ?? 0;
+$formData['amount_requested'] = $formData['requested_amount_numeric'] ?? 0;
+$formData['budget_breakdown'] = $formData['cost_details'] ?? '';
+$formData['experience'] = $formData['org_purpose'] ?? '';
+$formData['community_need'] = $formData['success_criteria'] ?? '';
+$formData['sustainability'] = $formData['remarks'] ?? '';
 
 // Basic validation
 $required = ['applicant', 'organization', 'email', 'phone', 'title', 'description', 'goals', 'budget_breakdown', 'other_funding', 'duration'];
@@ -95,7 +131,14 @@ try {
     $pdfPath = null;
     $html = EmailTemplates::generateProjectRequestPDF($formData);
     
-    $pdfPath = generate_pdf($html, preg_replace('/[^a-z0-9_-]/i','_', $formData['title'] ?: 'antrag'));
+    // Create filename-safe version of project title with proper German character handling
+    $projectTitle = $formData['project_name'] ?? $formData['title'] ?? 'antrag';
+    $filenameSafe = transliterate_to_ascii($projectTitle);
+    $filenameSafe = preg_replace('/[^a-z0-9_-]/i', '_', $filenameSafe);
+    $filenameSafe = preg_replace('/_+/', '_', $filenameSafe); // Replace multiple underscores with single
+    $filenameSafe = trim($filenameSafe, '_'); // Remove leading/trailing underscores
+    
+    $pdfPath = generate_pdf($html, $filenameSafe);
     
     // Send email with PDF attachment
     $emailService = new EmailService();

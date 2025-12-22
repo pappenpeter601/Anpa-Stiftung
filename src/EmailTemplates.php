@@ -126,8 +126,17 @@ class EmailTemplates {
     
     /**
      * Generate PDF-formatted project request (left-aligned, professional)
+     * Uses questionnaire.json structure to ensure consistency with form
      */
     public static function generateProjectRequestPDF($formData) {
+        // Load questionnaire structure
+        $questionnairePath = __DIR__ . '/../data/questionnaire.json';
+        $questionnaire = null;
+        if (file_exists($questionnairePath)) {
+            $json = file_get_contents($questionnairePath);
+            $questionnaire = json_decode($json, true);
+        }
+        
         $logoPath = __DIR__ . '/../public/assets/img/logo-120.png';
         $logoHtml = '';
         if (file_exists($logoPath)) {
@@ -147,112 +156,95 @@ class EmailTemplates {
         h3 { color: #555; font-size: 11pt; margin-top: 15px; margin-bottom: 8px; font-weight: bold; }
         table.info { width: 100%; border-collapse: collapse; margin: 10px 0; }
         table.info td { padding: 5px 10px; vertical-align: top; }
-        table.info td.label { font-weight: bold; width: 180px; color: #555; }
+        table.info td.label { font-weight: bold; width: 200px; color: #555; }
         .section { margin-bottom: 20px; }
-        .budget-box { background: #e8f5e9; padding: 15px; border-left: 4px solid #2e7d32; margin: 15px 0; }
-        .budget-box .amount { font-size: 14pt; font-weight: bold; color: #2e7d32; }
         .text-content { margin: 10px 0; padding: 10px; background: #f9f9f9; border-left: 3px solid #ddd; }
         .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #ddd; font-size: 9pt; color: #666; }
+        .declaration { background: #f8f9fa; padding: 15px; margin: 20px 0; border: 1px solid #ddd; }
+        .declaration-item { margin: 8px 0; font-size: 10pt; }
     </style>
 </head>
 <body>
     ' . $logoHtml . '
     <h1>Förderantrag</h1>
-    <p style="color: #666; margin-bottom: 25px;">Eingereicht am ' . date('d.m.Y \u\m H:i') . ' Uhr</p>
-    
-    <div class="section">
-        <h2>Antragsteller</h2>
-        <table class="info">
-            <tr><td class="label">Name:</td><td>' . htmlspecialchars($formData['applicant'], ENT_QUOTES, 'UTF-8') . '</td></tr>
-            <tr><td class="label">Organisation:</td><td>' . htmlspecialchars($formData['organization'], ENT_QUOTES, 'UTF-8') . '</td></tr>
-            <tr><td class="label">E-Mail:</td><td>' . htmlspecialchars($formData['email'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+    <p style="color: #666; margin-bottom: 25px;">Eingereicht am ' . date('d.m.Y \u\m H:i') . ' Uhr</p>';
         
-        if (!empty($formData['phone'])) {
-            $html .= '<tr><td class="label">Telefon:</td><td>' . htmlspecialchars($formData['phone'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
-        }
-        if (!empty($formData['address'])) {
-            $html .= '<tr><td class="label">Adresse:</td><td>' . nl2br(htmlspecialchars($formData['address'], ENT_QUOTES, 'UTF-8')) . '</td></tr>';
-        }
-        
-        $html .= '</table>
-    </div>
-    
-    <div class="section">
-        <h2>Projektinformationen</h2>
-        <table class="info">
-            <tr><td class="label">Projekttitel:</td><td><strong>' . htmlspecialchars($formData['title'], ENT_QUOTES, 'UTF-8') . '</strong></td></tr>
-            <tr><td class="label">Kategorie:</td><td>' . htmlspecialchars($formData['category'], ENT_QUOTES, 'UTF-8') . '</td></tr>
-            <tr><td class="label">Zielgruppe:</td><td>' . htmlspecialchars($formData['age_group'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
-        
-        if (!empty($formData['duration'])) {
-            $html .= '<tr><td class="label">Projektdauer:</td><td>' . htmlspecialchars($formData['duration'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
-        }
-        
-        $html .= '</table>
-        
-        <h3>Projektbeschreibung</h3>
-        <div class="text-content">' . nl2br(htmlspecialchars($formData['description'], ENT_QUOTES, 'UTF-8')) . '</div>
-        
-        <h3>Projektziele und erwartete Wirkung</h3>
-        <div class="text-content">' . nl2br(htmlspecialchars($formData['goals'], ENT_QUOTES, 'UTF-8')) . '</div>
-    </div>
-    
-    <div class="section">
-        <h2>Budgetinformationen</h2>
-        <div class="budget-box">
-            <table class="info">
-                <tr><td class="label">Gesamtbudget:</td><td class="amount">€ ' . number_format($formData['budget'], 2, ',', '.') . '</td></tr>
-                <tr><td class="label">Beantragte Förderung:</td><td class="amount" style="color: #2563eb;">€ ' . number_format($formData['amount_requested'], 2, ',', '.') . '</td></tr>
-            </table>
-        </div>';
-        
-        if (!empty($formData['budget_breakdown'])) {
-            $html .= '<h3>Budgetaufschlüsselung</h3>
-            <div class="text-content">' . nl2br(htmlspecialchars($formData['budget_breakdown'], ENT_QUOTES, 'UTF-8')) . '</div>';
-        }
-        
-        if (!empty($formData['other_funding'])) {
-            $html .= '<h3>Andere Finanzierungsquellen</h3>
-            <div class="text-content">' . nl2br(htmlspecialchars($formData['other_funding'], ENT_QUOTES, 'UTF-8')) . '</div>';
-        }
-        
-        $html .= '</div>';
-        
-        // Additional information
-        $hasAdditionalInfo = !empty($formData['experience']) || !empty($formData['community_need']) || !empty($formData['sustainability']);
-        if ($hasAdditionalInfo) {
-            $html .= '<div class="section"><h2>Zusätzliche Informationen</h2>';
-            
-            if (!empty($formData['experience'])) {
-                $html .= '<h3>Bisherige Erfahrung der Organisation</h3>
-                <div class="text-content">' . nl2br(htmlspecialchars($formData['experience'], ENT_QUOTES, 'UTF-8')) . '</div>';
+        // Generate sections from questionnaire if available
+        if ($questionnaire && isset($questionnaire['sections'])) {
+            foreach ($questionnaire['sections'] as $section) {
+                $html .= '<div class="section"><h2>' . $section['order'] . '. ' . htmlspecialchars($section['title'], ENT_QUOTES, 'UTF-8') . '</h2>';
+                
+                $hasContent = false;
+                $sectionContent = '<table class="info">';
+                
+                foreach ($section['questions'] as $question) {
+                    $questionId = $question['id'];
+                    $questionLabel = $question['label'];
+                    $value = isset($formData[$questionId]) ? $formData[$questionId] : null;
+                    
+                    // Check if field has data - handle different types properly
+                    $hasValue = false;
+                    if ($value !== null && $value !== '') {
+                        $hasValue = true;
+                    } elseif (is_numeric($value) && $value == 0) {
+                        $hasValue = true; // 0 is a valid value
+                    }
+                    
+                    // Only show fields with actual data (skip truly empty values)
+                    if ($hasValue) {
+                        $hasContent = true;
+                        
+                        // Format value based on field properties
+                        if ($question['type'] === 'textarea') {
+                            // For textarea, show as text content block
+                            $sectionContent .= '</table>';
+                            $sectionContent .= '<h3>' . htmlspecialchars($questionLabel, ENT_QUOTES, 'UTF-8') . '</h3>';
+                            $sectionContent .= '<div class="text-content">' . nl2br(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')) . '</div>';
+                            $sectionContent .= '<table class="info">';
+                            continue;
+                        } elseif (isset($question['input_type']) && $question['input_type'] === 'numeric' && isset($question['prefix'])) {
+                            // Format numeric fields with prefix (e.g., currency)
+                            $numericValue = str_replace(',', '.', $value);
+                            $formattedValue = $question['prefix'] . ' ' . number_format((float)$numericValue, 2, ',', '.');
+                        } else {
+                            $formattedValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                            if (strpos($value, "\n") !== false) {
+                                $formattedValue = nl2br($formattedValue);
+                            }
+                        }
+                        
+                        $sectionContent .= '<tr><td class="label">' . htmlspecialchars($questionLabel, ENT_QUOTES, 'UTF-8') . ':</td><td>' . $formattedValue . '</td></tr>';
+                    }
+                }
+                
+                $sectionContent .= '</table>';
+                
+                // Only output section if it has content
+                if ($hasContent) {
+                    $html .= $sectionContent;
+                }
+                
+                $html .= '</div>';
             }
             
-            if (!empty($formData['community_need'])) {
-                $html .= '<h3>Bedarf in der Gemeinde / Erfolgskriterien</h3>
-                <div class="text-content">' . nl2br(htmlspecialchars($formData['community_need'], ENT_QUOTES, 'UTF-8')) . '</div>';
+            // Add declaration section if present
+            if (isset($questionnaire['declaration'])) {
+                $html .= '<div class="section"><h2>' . htmlspecialchars($questionnaire['declaration']['title'], ENT_QUOTES, 'UTF-8') . '</h2>';
+                $html .= '<div class="declaration">';
+                
+                foreach ($questionnaire['declaration']['statements'] as $index => $statement) {
+                    $romanNumeral = ['I', 'II', 'III', 'IV', 'V', 'VI'][$index];
+                    $html .= '<div class="declaration-item"><strong>' . $romanNumeral . '.</strong> ' . htmlspecialchars($statement, ENT_QUOTES, 'UTF-8') . '</div>';
+                }
+                
+                $html .= '</div>';
+                
+                if (isset($questionnaire['declaration']['agreement'])) {
+                    $html .= '<p style="margin-top: 15px; font-size: 10pt; font-style: italic;">Der Antragsteller hat bestätigt: ' . htmlspecialchars($questionnaire['declaration']['agreement']['label'], ENT_QUOTES, 'UTF-8') . '</p>';
+                }
+                
+                $html .= '</div>';
             }
-            
-            if (!empty($formData['sustainability'])) {
-                $html .= '<h3>Nachhaltigkeitsplan / Anmerkungen</h3>
-                <div class="text-content">' . nl2br(htmlspecialchars($formData['sustainability'], ENT_QUOTES, 'UTF-8')) . '</div>';
-            }
-            
-            $html .= '</div>';
-        }
-        
-        // Bank details if available
-        if (!empty($formData['iban'])) {
-            $html .= '<div class="section">
-                <h2>Bankverbindung</h2>
-                <table class="info">
-                    <tr><td class="label">IBAN:</td><td>' . htmlspecialchars($formData['iban'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
-            
-            if (!empty($formData['bic'])) {
-                $html .= '<tr><td class="label">BIC:</td><td>' . htmlspecialchars($formData['bic'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
-            }
-            
-            $html .= '</table></div>';
         }
         
         $html .= '
@@ -288,22 +280,45 @@ class EmailTemplates {
         $content .= '
                     <tr><td style="padding: 5px 0; font-weight: bold;">Antragsdatum:</td><td style="padding: 5px 0;">' . date('d.m.Y H:i') . ' Uhr</td></tr>
                 </table>
-            </div>
+            </div>';
+        
+        // Organization Information Section
+        if (!empty($formData['org_since']) || !empty($formData['legal_form']) || !empty($formData['previous_application'])) {
+            $content .= '
+            <div style="background: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0;">
+                <h3 style="margin: 0 0 15px 0; color: #2563eb; font-size: 18px;">🏢 Organisation</h3>
+                <table style="width: 100%; font-size: 14px; color: #333;">';
             
+            if (!empty($formData['org_since'])) {
+                $content .= '<tr><td style="padding: 5px 0; font-weight: bold; width: 160px;">Seit wann:</td><td style="padding: 5px 0;">' . htmlspecialchars($formData['org_since'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+            }
+            
+            if (!empty($formData['legal_form'])) {
+                $content .= '<tr><td style="padding: 5px 0; font-weight: bold;">Rechtsform:</td><td style="padding: 5px 0;">' . htmlspecialchars($formData['legal_form'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+            }
+            
+            if (!empty($formData['previous_application'])) {
+                $content .= '<tr><td style="padding: 5px 0; font-weight: bold;">Frühere Anträge:</td><td style="padding: 5px 0;">' . htmlspecialchars($formData['previous_application'], ENT_QUOTES, 'UTF-8');
+                if (!empty($formData['previous_project'])) {
+                    $content .= ' (' . htmlspecialchars($formData['previous_project'], ENT_QUOTES, 'UTF-8') . ')';
+                }
+                $content .= '</td></tr>';
+            }
+            
+            $content .= '
+                </table>
+            </div>';
+        }
+        
+        $content .= '
             <div style="background: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0;">
                 <h3 style="margin: 0 0 15px 0; color: #2563eb; font-size: 18px;">🎯 Projektdetails</h3>
                 <table style="width: 100%; font-size: 14px; color: #333;">
-                    <tr><td style="padding: 5px 0; font-weight: bold; width: 160px;">Projekttitel:</td><td style="padding: 5px 0; font-size: 16px; font-weight: bold; color: #2563eb;">' . htmlspecialchars($formData['title'], ENT_QUOTES, 'UTF-8') . '</td></tr>
-                    <tr><td style="padding: 5px 0; font-weight: bold;">Kategorie:</td><td style="padding: 5px 0;">' . htmlspecialchars($formData['category'], ENT_QUOTES, 'UTF-8') . '</td></tr>
-                    <tr><td style="padding: 5px 0; font-weight: bold;">Zielgruppe:</td><td style="padding: 5px 0;">' . htmlspecialchars($formData['age_group'], ENT_QUOTES, 'UTF-8') . '</td></tr>
-                    <tr><td style="padding: 5px 0; font-weight: bold;">Begünstigte:</td><td style="padding: 5px 0;">' . htmlspecialchars($formData['beneficiaries'], ENT_QUOTES, 'UTF-8') . ' junge Menschen</td></tr>';
+                    <tr><td style="padding: 5px 0; font-weight: bold; width: 160px;">Projekttitel:</td><td style="padding: 5px 0; font-size: 16px; font-weight: bold; color: #2563eb;">' . htmlspecialchars($formData['project_name'] ?? '', ENT_QUOTES, 'UTF-8') . '</td></tr>
+                    <tr><td style="padding: 5px 0; font-weight: bold;">Zielgruppe:</td><td style="padding: 5px 0;">' . nl2br(htmlspecialchars($formData['target_group'] ?? '', ENT_QUOTES, 'UTF-8')) . '</td></tr>';
         
-        if (!empty($formData['start_date'])) {
-            $content .= '<tr><td style="padding: 5px 0; font-weight: bold;">Startdatum:</td><td style="padding: 5px 0;">' . date('d.m.Y', strtotime($formData['start_date'])) . '</td></tr>';
-        }
-        
-        if (!empty($formData['duration'])) {
-            $content .= '<tr><td style="padding: 5px 0; font-weight: bold;">Dauer:</td><td style="padding: 5px 0;">' . htmlspecialchars($formData['duration'], ENT_QUOTES, 'UTF-8') . '</td></tr>';
+        if (!empty($formData['timeline'])) {
+            $content .= '<tr><td style="padding: 5px 0; font-weight: bold;">Zeitplanung:</td><td style="padding: 5px 0;">' . nl2br(htmlspecialchars($formData['timeline'], ENT_QUOTES, 'UTF-8')) . '</td></tr>';
         }
         
         $content .= '
@@ -312,56 +327,56 @@ class EmailTemplates {
             
             <div style="background: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0;">
                 <h3 style="margin: 0 0 15px 0; color: #2563eb; font-size: 18px;">📝 Projektbeschreibung</h3>
-                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap;">' . htmlspecialchars($formData['description'], ENT_QUOTES, 'UTF-8') . '</p>
+                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap;">' . nl2br(htmlspecialchars($formData['project_description'] ?? '', ENT_QUOTES, 'UTF-8')) . '</p>
             </div>
             
             <div style="background: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0;">
-                <h3 style="margin: 0 0 15px 0; color: #2563eb; font-size: 18px;">🎯 Ziele und erwartete Wirkung</h3>
-                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap;">' . htmlspecialchars($formData['goals'], ENT_QUOTES, 'UTF-8') . '</p>
+                <h3 style="margin: 0 0 15px 0; color: #2563eb; font-size: 18px;">🎯 Ziel und Zweck des Projekts</h3>
+                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap;">' . nl2br(htmlspecialchars($formData['project_goal'] ?? '', ENT_QUOTES, 'UTF-8')) . '</p>
             </div>
             
             <div style="background: #e8f5e9; border-radius: 6px; padding: 20px; margin: 20px 0;">
                 <h3 style="margin: 0 0 15px 0; color: #2e7d32; font-size: 18px;">💰 Budget</h3>
                 <table style="width: 100%; font-size: 14px; color: #333;">
-                    <tr><td style="padding: 5px 0; font-weight: bold; width: 200px;">Gesamtbudget:</td><td style="padding: 5px 0; font-size: 16px; font-weight: bold; color: #2e7d32;">€ ' . number_format($formData['budget'], 2, ',', '.') . '</td></tr>
-                    <tr><td style="padding: 5px 0; font-weight: bold;">Beantragte Förderung:</td><td style="padding: 5px 0; font-size: 16px; font-weight: bold; color: #2563eb;">€ ' . number_format($formData['amount_requested'], 2, ',', '.') . '</td></tr>
+                    <tr><td style="padding: 5px 0; font-weight: bold; width: 200px;">Gesamtkosten:</td><td style="padding: 5px 0; font-size: 16px; font-weight: bold; color: #2e7d32;">€ ' . number_format($formData['total_cost_numeric'] ?? 0, 2, ',', '.') . '</td></tr>
+                    <tr><td style="padding: 5px 0; font-weight: bold;">Beantragte Förderung:</td><td style="padding: 5px 0; font-size: 16px; font-weight: bold; color: #2563eb;">€ ' . number_format($formData['requested_amount_numeric'] ?? 0, 2, ',', '.') . '</td></tr>
                 </table>';
         
-        if (!empty($formData['budget_breakdown'])) {
+        if (!empty($formData['cost_details'])) {
             $content .= '
-                <h4 style="margin: 15px 0 10px 0; color: #2e7d32; font-size: 14px;">Budgetaufschlüsselung:</h4>
-                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . htmlspecialchars($formData['budget_breakdown'], ENT_QUOTES, 'UTF-8') . '</p>';
+                <h4 style="margin: 15px 0 10px 0; color: #2e7d32; font-size: 14px;">Angaben zu den Kosten:</h4>
+                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . nl2br(htmlspecialchars($formData['cost_details'], ENT_QUOTES, 'UTF-8')) . '</p>';
         }
         
         if (!empty($formData['other_funding'])) {
             $content .= '
                 <h4 style="margin: 15px 0 10px 0; color: #2e7d32; font-size: 14px;">Andere Finanzierungsquellen:</h4>
-                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . htmlspecialchars($formData['other_funding'], ENT_QUOTES, 'UTF-8') . '</p>';
+                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . nl2br(htmlspecialchars($formData['other_funding'], ENT_QUOTES, 'UTF-8')) . '</p>';
         }
         
         $content .= '</div>';
         
-        // Additional information sections
-        if (!empty($formData['experience']) || !empty($formData['community_need']) || !empty($formData['sustainability'])) {
+        // Additional information section
+        if (!empty($formData['org_purpose']) || !empty($formData['success_criteria']) || !empty($formData['remarks'])) {
             $content .= '<div style="background: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0;">
                 <h3 style="margin: 0 0 15px 0; color: #2563eb; font-size: 18px;">ℹ️ Zusätzliche Informationen</h3>';
             
-            if (!empty($formData['experience'])) {
+            if (!empty($formData['org_purpose'])) {
                 $content .= '
-                <h4 style="margin: 15px 0 10px 0; color: #666; font-size: 14px;">Bisherige Erfahrung:</h4>
-                <p style="margin: 0 0 15px 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . htmlspecialchars($formData['experience'], ENT_QUOTES, 'UTF-8') . '</p>';
+                <h4 style="margin: 15px 0 10px 0; color: #666; font-size: 14px;">Zwecke der Organisation:</h4>
+                <p style="margin: 0 0 15px 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . nl2br(htmlspecialchars($formData['org_purpose'], ENT_QUOTES, 'UTF-8')) . '</p>';
             }
             
-            if (!empty($formData['community_need'])) {
+            if (!empty($formData['success_criteria'])) {
                 $content .= '
-                <h4 style="margin: 15px 0 10px 0; color: #666; font-size: 14px;">Bedarf in der Gemeinde:</h4>
-                <p style="margin: 0 0 15px 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . htmlspecialchars($formData['community_need'], ENT_QUOTES, 'UTF-8') . '</p>';
+                <h4 style="margin: 15px 0 10px 0; color: #666; font-size: 14px;">Das Projekt ist erfolgreich, wenn:</h4>
+                <p style="margin: 0 0 15px 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . nl2br(htmlspecialchars($formData['success_criteria'], ENT_QUOTES, 'UTF-8')) . '</p>';
             }
             
-            if (!empty($formData['sustainability'])) {
+            if (!empty($formData['remarks'])) {
                 $content .= '
-                <h4 style="margin: 15px 0 10px 0; color: #666; font-size: 14px;">Nachhaltigkeitsplan:</h4>
-                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . htmlspecialchars($formData['sustainability'], ENT_QUOTES, 'UTF-8') . '</p>';
+                <h4 style="margin: 15px 0 10px 0; color: #666; font-size: 14px;">Bemerkungen:</h4>
+                <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-wrap; font-size: 13px;">' . nl2br(htmlspecialchars($formData['remarks'], ENT_QUOTES, 'UTF-8')) . '</p>';
             }
             
             $content .= '</div>';

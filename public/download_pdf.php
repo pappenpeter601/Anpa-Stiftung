@@ -6,8 +6,8 @@
 
 require_once __DIR__ . '/../config.php';
 
-// Get the requested PDF filename
-$filename = $_GET['file'] ?? '';
+// Get the requested PDF filename (support both 'file' and 'doc' parameters)
+$filename = $_GET['file'] ?? $_GET['doc'] ?? '';
 
 // Security: Only allow alphanumeric characters, hyphens, underscores, and .pdf extension
 if (!preg_match('/^[a-zA-Z0-9_-]+\.pdf$/', $filename)) {
@@ -15,18 +15,42 @@ if (!preg_match('/^[a-zA-Z0-9_-]+\.pdf$/', $filename)) {
     die('Invalid filename');
 }
 
-$pdfPath = STORAGE_PATH . '/pdfs/' . $filename;
+// Check both pdfs and documents subdirectories
+$pdfPath = null;
+$possiblePaths = [
+    STORAGE_PATH . '/pdfs/' . $filename,
+    STORAGE_PATH . '/documents/' . $filename,
+];
+
+foreach ($possiblePaths as $path) {
+    if (file_exists($path)) {
+        $pdfPath = $path;
+        break;
+    }
+}
 
 // Check if file exists
-if (!file_exists($pdfPath)) {
+if (!$pdfPath || !file_exists($pdfPath)) {
     header('HTTP/1.0 404 Not Found');
     die('File not found');
 }
 
-// Security: Make sure the file is actually in the pdfs directory
+// Security: Make sure the file is actually in the allowed directories
 $realPath = realpath($pdfPath);
-$expectedPath = realpath(STORAGE_PATH . '/pdfs');
-if (strpos($realPath, $expectedPath) !== 0) {
+$allowedPaths = [
+    realpath(STORAGE_PATH . '/pdfs'),
+    realpath(STORAGE_PATH . '/documents'),
+];
+
+$isAllowed = false;
+foreach ($allowedPaths as $allowedPath) {
+    if ($allowedPath && strpos($realPath, $allowedPath) === 0) {
+        $isAllowed = true;
+        break;
+    }
+}
+
+if (!$isAllowed) {
     header('HTTP/1.0 403 Forbidden');
     die('Access denied');
 }

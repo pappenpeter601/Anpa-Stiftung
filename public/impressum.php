@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../src/helpers.php';
 $pageTitle = 'Impressum';
 $pageDescription = 'Impressum und rechtliche Angaben der Andreas Pareigis Stiftung, Soltau.';
 include __DIR__ . '/../templates/header.php';
@@ -47,7 +48,7 @@ include __DIR__ . '/../templates/header.php';
         <h5 class="fw-bold mt-4 mb-3">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h5>
         <p>
           Peter Scharringhausen<br>
-          Meinern 15a<br>
+          Wüsthof 1<br>
           29614 Soltau
         </p>
 

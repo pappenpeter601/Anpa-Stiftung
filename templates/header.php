@@ -1,5 +1,11 @@
 <?php
 if (!defined('SITE_NAME')) require_once __DIR__ . '/../config.php';
+
+// Load SecurityHelper if available and set headers
+if (file_exists(__DIR__ . '/../src/SecurityHelper.php')) {
+    require_once __DIR__ . '/../src/SecurityHelper.php';
+    SecurityHelper::setSecurityHeaders();
+}
 ?>
 <!doctype html>
 <html lang="de">
@@ -33,6 +39,9 @@ if (!defined('SITE_NAME')) require_once __DIR__ . '/../config.php';
   <meta name="twitter:description" content="<?php echo isset($pageDescription) ? $pageDescription : 'Gemeinnützige Stiftung zur Förderung sozial benachteiligter Kinder und Jugendlicher in Soltau'; ?>">
   <meta name="twitter:image" content="<?php echo BASE_URL; ?>assets/img/logo-400.png">
   
+  <!-- Canonical URL -->
+  <link rel="canonical" href="<?php echo 'https://' . $_SERVER['HTTP_HOST'] . strtok($_SERVER['REQUEST_URI'], '?'); ?>">
+  
   <!-- Mobile Optimization -->
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -48,13 +57,11 @@ if (!defined('SITE_NAME')) require_once __DIR__ . '/../config.php';
   <!-- PWA Manifest -->
   <link rel="manifest" href="<?php echo BASE_URL; ?>manifest.json">
   
-  <!-- Preconnect for performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Preconnect for performance (CDN only) -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   
-  <!-- Fonts & Styles -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts & Styles (Self-hosted for GDPR compliance) -->
+  <link href="<?php echo BASE_URL; ?>assets/css/fonts.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="<?php echo BASE_URL; ?>assets/css/style.css" rel="stylesheet">
   
@@ -79,7 +86,15 @@ if (!defined('SITE_NAME')) require_once __DIR__ . '/../config.php';
       "name": "Soltau"
     },
     "foundingDate": "<?php echo date('Y'); ?>",
-    "nonprofitStatus": "NonprofitANBI"
+    "nonprofitStatus": "NonprofitANBI",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "info@andreas-pareigis-stiftung.de",
+      "contactType": "customer service",
+      "availableLanguage": ["German"]
+    },
+    "slogan": "Förderung sozial benachteiligter Kinder und Jugendlicher",
+    "knowsAbout": ["Jugendförderung", "Jugendhilfe", "Bildungsförderung", "Soziale Förderung"]
   }
   </script>
 </head>

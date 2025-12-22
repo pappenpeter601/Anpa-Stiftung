@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Satzung und Stiftungsurkunde",
+    "description": "Satzung der Andreas Pareigis Stiftung zum 29.12.2022",
+    "filename": "Satzung_29122022.pdf",
+    "order": 1,
+    "category": "Zertifikate",
+    "visible": true
+  },
+  {
+    "title": "Jahresbericht 2024",
+    "description": "Finanzbericht und Tätigkeitsübersicht",
+    "filename": "Jahresabrechnung_2024.pdf",
+    "order": 2,
+    "category": "Berichte",
+    "visible": true
+  },
+  {
+    "title": "Steuerliche Freistellungsbescheinigung 2024",
+    "description": "Bestätigung der Gemeinnützigkeit",
+    "filename": "Freistellungsbescheid_2024.pdf",
+    "order": 3,
+    "category": "Bescheinigungen",
+    "visible": true
+  },
+  {
+    "title": "Jahresbericht 2023",
+    "description": "Finanzbericht und Tätigkeitsübersicht",
+    "filename": "Jahresabrechnung_2023.pdf",
+    "order": 4,
+    "category": "Berichte",
+    "visible": true
+  },
+  {
+    "title": "Steuerliche Freistellungsbescheinigung 2023",
+    "description": "Bestätigung der Gemeinnützigkeit",
+    "filename": "Freistellungsbescheid_2023.pdf",
+    "order": 5,
+    "category": "Bescheinigungen",
+    "visible": true
+  }
+]
