@@ -126,10 +126,15 @@ include __DIR__ . '/../templates/header.php';
 
           <form method="post" action="contact_submit.php">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+            <div class="d-none" aria-hidden="true">
+              <label>Bitte nicht ausfüllen</label>
+              <input type="text" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <input type="hidden" name="form_time" value="<?php echo time(); ?>">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">Vor- und Nachname *</label>
-                <input class="form-control" name="name" required placeholder="Max Mustermann">
+                <input class="form-control" name="name" required pattern="[A-Za-zÄÖÜäöüß\s\-']{2,80}" title="Nur Buchstaben (inkl. ä, ö, ü, ß), Leerzeichen, Bindestriche oder Apostrophe" placeholder="Max Mustermann">
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">Organisation</label>
@@ -162,8 +167,8 @@ include __DIR__ . '/../templates/header.php';
 
             <div class="mb-3">
               <label class="form-label">Ihre Nachricht *</label>
-              <textarea class="form-control" name="message" rows="6" required placeholder="Beschreiben Sie bitte Ihr Anliegen..."></textarea>
-              <small class="text-muted">Mindestens 20 Zeichen</small>
+              <textarea class="form-control" name="message" rows="6" required minlength="20" placeholder="Beschreiben Sie bitte Ihr Anliegen..."></textarea>
+              <small class="text-muted">Mindestens 20 Zeichen, bitte als Satz formulieren. Nur HTTPS-Links erlaubt.</small>
             </div>
 
             <div class="form-check mb-4">

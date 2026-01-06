@@ -149,6 +149,83 @@ class SecurityHelper {
         
         return true;
     }
+
+    /**
+     * Lightweight bot check using honeypot and form timing
+     */
+    public static function isLikelyBotSubmission(array $postData, $honeypotField = 'website', $minSeconds = 3) {
+        $honeypot = trim($postData[$honeypotField] ?? '');
+        if ($honeypot !== '') {
+            return true;
+        }
+
+        $formTime = isset($postData['form_time']) ? (int)$postData['form_time'] : 0;
+        if ($formTime <= 0) {
+            return true;
+        }
+
+        $age = time() - $formTime;
+        if ($age < $minSeconds || $age > 7200) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Validate German-ish person names (allow umlauts, ß, spaces, apostrophes, hyphens)
+     */
+    public static function isValidGermanName($name) {
+        $name = trim($name);
+        if ($name === '' || mb_strlen($name) < 2) {
+            return false;
+        }
+
+        // Only letters (including umlauts/ß), spaces, apostrophes, and hyphens
+        return (bool) preg_match('/^[A-Za-zÄÖÜäöüß\s\-\'’]{2,80}$/u', $name);
+    }
+
+    /**
+     * Validate message content: allow basic punctuation, ensure HTTPS-only links, require multiple words
+     */
+    public static function isValidGermanMessage($message, $minWords = 5, $minLength = 20) {
+        $message = trim($message);
+        if ($message === '' || mb_strlen($message) < $minLength) {
+            return false;
+        }
+
+        // Reject disallowed characters (keep it to letters incl. umlauts, digits, common punctuation, newlines, slashes for URLs)
+        if (!preg_match('/^[A-Za-zÄÖÜäöüß0-9\s\n\r.,!?:;()"\'’\-–—„“‚‘…\/]+$/u', $message)) {
+            return false;
+        }
+
+        // Must have enough words to resemble a sentence
+        $words = preg_split('/\s+/u', $message, -1, PREG_SPLIT_NO_EMPTY);
+        if (count($words) < $minWords) {
+            return false;
+        }
+
+        // Require at least one vowel (including umlauts) to avoid gibberish
+        if (!preg_match('/[AEIOUÄÖÜaeiouäöü]/u', $message)) {
+            return false;
+        }
+
+        // Enforce HTTPS if links are present; forbid http://
+        if (preg_match('/http:\/\//i', $message)) {
+            return false;
+        }
+
+        // If any link is present, ensure it is https://
+        if (preg_match_all('/https?:\/\/\S+/i', $message, $matches)) {
+            foreach ($matches[0] as $url) {
+                if (stripos($url, 'https://') !== 0) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
     
     /**
      * Sanitize filename for safe file operations

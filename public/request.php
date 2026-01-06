@@ -132,6 +132,11 @@ function renderField($question) {
         <h4 class="fw-bold mb-4">Förderantrag</h4>
         <form method="post" action="request_submit.php">
           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+          <div class="d-none" aria-hidden="true">
+            <label>Bitte nicht ausfüllen</label>
+            <input type="text" name="website" tabindex="-1" autocomplete="off">
+          </div>
+          <input type="hidden" name="form_time" value="<?php echo time(); ?>">
           
           <?php foreach ($questionnaire['sections'] as $section): ?>
             <h6 class="fw-bold mb-3 <?php echo $section['order'] > 1 ? 'mt-4' : ''; ?> text-primary">
