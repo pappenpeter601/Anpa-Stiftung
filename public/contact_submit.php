@@ -37,6 +37,17 @@ if (!isset($_POST['csrf_token']) || !SecurityHelper::validateCSRFToken($_POST['c
     exit;
 }
 
+// Honeypot/time check to filter bots
+if (SecurityHelper::isLikelyBotSubmission($_POST)) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-warning">Ihre Anfrage konnte nicht verifiziert werden. Bitte laden Sie die Seite neu und versuchen Sie es erneut.</div>';
+    echo '<a href="contact.php" class="btn btn-primary">Zurück zum Kontaktformular</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
 // Rate limiting (5 submissions per 5 minutes per IP)
 $clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 if (!SecurityHelper::checkRateLimit('contact_' . $clientIP, 5, 300)) {
@@ -73,6 +84,27 @@ if (!filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
     include __DIR__ . '/../templates/header.php';
     echo '<div class="container my-5">';
     echo '<div class="alert alert-danger">Bitte geben Sie eine gültige E-Mail-Adresse an.</div>';
+    echo '<a href="contact.php" class="btn btn-primary">Zurück</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
+// German-friendly validation for name and message content
+if (!SecurityHelper::isValidGermanName($formData['name'])) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-danger">Bitte verwenden Sie für den Namen nur Buchstaben (inkl. ä, ö, ü, ß), Leerzeichen, Bindestriche oder Apostrophe.</div>';
+    echo '<a href="contact.php" class="btn btn-primary">Zurück</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
+if (!SecurityHelper::isValidGermanMessage($formData['message'])) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-danger">Ihre Nachricht muss wie ein echter deutscher Satz formuliert sein, mindestens 20 Zeichen und 5 Wörter enthalten und darf nur HTTPS-Links und erlaubte Zeichen nutzen.</div>';
     echo '<a href="contact.php" class="btn btn-primary">Zurück</a>';
     echo '</div>';
     include __DIR__ . '/../templates/footer.php';

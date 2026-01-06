@@ -40,6 +40,17 @@ if (!isset($_POST['csrf_token']) || !SecurityHelper::validateCSRFToken($_POST['c
     exit;
 }
 
+// Honeypot/time check to filter bots
+if (SecurityHelper::isLikelyBotSubmission($_POST)) {
+    include __DIR__ . '/../templates/header.php';
+    echo '<div class="container my-5">';
+    echo '<div class="alert alert-warning">Ihr Antrag konnte nicht verifiziert werden. Bitte laden Sie das Formular neu und versuchen Sie es erneut.</div>';
+    echo '<a href="request.php" class="btn btn-primary">Zurück zum Antragsformular</a>';
+    echo '</div>';
+    include __DIR__ . '/../templates/footer.php';
+    exit;
+}
+
 // Rate limiting (3 submissions per 10 minutes per IP)
 $clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 if (!SecurityHelper::checkRateLimit('request_' . $clientIP, 3, 600)) {
