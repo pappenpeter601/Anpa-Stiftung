@@ -130,6 +130,11 @@ a:hover, a:focus {
 	padding: 4rem 0 !important;
 }
 
+.hero::before,
+.hero::after {
+	pointer-events: none;
+}
+
 .hero::before {
 	content: '';
 	position: absolute;

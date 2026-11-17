@@ -95,6 +95,13 @@ function renderField($question) {
     <p class="lead text-muted mx-auto" style="max-width: 700px;">
       Reichen Sie Ihren Förderantrag für die Andreas Pareigis Stiftung ein
     </p>
+    <a class="btn btn-outline-primary" href="request_pdf.php" download="foerderantrag.pdf">
+      Leeres Antragsformular als PDF herunterladen
+    </a>
+    <p class="text-muted small mt-2 mb-0">
+      Im PDF-Viewer ausfüllen und speichern oder ausdrucken und handschriftlich ausfüllen.
+      Bereits online eingegebene Daten werden nicht übernommen.
+    </p>
   </div>
 </div>
 

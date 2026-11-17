@@ -22,3 +22,11 @@ Notes
 
 - On some shared hosts you must configure SMTP in `src/helpers.php` (PHPMailer) or rely on `mail()`.
 - Replace placeholder images in `public/assets/img/` with your real photos and logo.
+
+Request form PDF
+
+- The request page offers a blank, fillable A4 PDF via `public/request_pdf.php`. It uses the same `data/questionnaire.json` as the online form, including eligibility criteria and declarations.
+- Applicants can save their answers in a PDF viewer or print the form. Multiline fields reserve at least 24 mm of writing space, increasing with the configured row count (10 mm per row).
+- The download does not copy online answers, store a PDF on the server, or submit an application. The PDF includes return instructions and space for a date and signature.
+- mPDF uses `storage/pdfs/tmp` for its font cache; the webserver must be able to create and write this directory.
+- Selection controls use drawn outlines rather than font symbols so unselected options also appear empty in Firefox's PDF viewer.
