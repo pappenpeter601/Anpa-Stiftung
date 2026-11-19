@@ -3,6 +3,12 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/helpers.php';
 $pageTitle = 'Impressum';
 $pageDescription = 'Impressum und rechtliche Angaben der Andreas Pareigis Stiftung, Soltau.';
+$board = array_filter(load_json('data/team.json'), function($member) {
+    return isset($member['category']) && $member['category'] === 'board';
+});
+if (empty($board)) {
+    error_log('No board members found in data/team.json for the Impressum.');
+}
 include __DIR__ . '/../templates/header.php';
 ?>
 
@@ -23,9 +29,13 @@ include __DIR__ . '/../templates/header.php';
         <h5 class="fw-bold mt-4 mb-3">Vertreten durch</h5>
         <p>
           <strong>Vorstand:</strong><br>
-          Peter Scharringhausen (Vorsitzender)<br>
-          Birte Flammann (Stellvertretende Vorsitzende)<br>
-          Michael Lihograj (Schatzmeister)
+          <?php if (empty($board)): ?>
+            Die Angaben zum Vorstand sind derzeit nicht verfügbar.
+          <?php else: ?>
+            <?php foreach ($board as $member): ?>
+              <?php echo htmlspecialchars($member['name']); ?><?php if (!empty($member['role'])): ?> (<?php echo htmlspecialchars($member['role']); ?>)<?php endif; ?><br>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </p>
 
         <h5 class="fw-bold mt-4 mb-3">Kontakt</h5>

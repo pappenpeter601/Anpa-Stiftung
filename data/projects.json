@@ -1,5 +1,25 @@
 [
   {
+    "title": "Lebenshilfe Soltau e.V.",
+    "summary": "Projekt Wasserflöhe",
+    "description": "Wassergewöhnung für Säuglinge und Kleinkinder im Alter von 1 bis 6 Jahren.",
+    "image": "kids-support-placeholder.svg",
+    "website": "https://www.lebenshilfe-soltau.de/de/",
+    "year": 2026,
+    "category": "Erziehung und Bildung",
+    "amount": "960,00 €"
+  },
+  {
+    "title": "MTV Soltau v. 1864 e.V.",
+    "summary": "Förderung HockeyHeldinnen Projekt Grundausstattung",
+    "description": "Unterstützung des HockeyHeldinnen Projekts bei der Anschaffung der Grundausstattung für die teilnehmenden Kinder und Jugendlichen.",
+    "image": "kids-support-placeholder.svg",
+    "website": "https://www.mtv-soltau.de/",
+    "year": 2026,
+    "category": "Jugendhilfe",
+    "amount": "300,00 €"
+  },
+  {
     "title": "Kinder- und Jugendhospizdienst Calluna e.V.",
     "summary": "Lastenfahrrad zur Teilnahme an Aktivitäten für betroffene Kinder und Jugendliche",
     "description": "Anschaffung eines Lastenfahrrads, um betroffenen Kindern und Jugendlichen die Möglichkeit zu geben, an Aktivitäten teilzunehmen und ihre Mobilität zu verbessern.",
